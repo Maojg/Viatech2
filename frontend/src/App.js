@@ -2,11 +2,11 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 
 // Importa los componentes desde las rutas en minúsculas
-import Login from './pages/login';
+import Login from './pages/Login';
 import Register from './pages/Register';
 
 function App() {
-  return (
+  return (  
     <Router>
       <Routes>
         <Route path="/" element={<Login />} />

@@ -69,13 +69,105 @@ This section has moved here: [https://facebook.github.io/create-react-app/docs/d
 
 This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
 
-## Iniciar el Backend
+# 🚀 Viatech2 – Sistema de Gestión de Viáticos
 
-```bash
-cd backend
+Este proyecto es una aplicación web de gestión de viáticos desarrollada con **React** en el frontend y **Flask** en el backend. Permite a los usuarios registrarse, iniciar sesión y gestionar solicitudes de viáticos.
+
+---
+
+## 🧰 Tecnologías Utilizadas
+
+- 🔧 **Frontend**: React, JavaScript, HTML, CSS  
+- 🐍 **Backend**: Flask, Flask-CORS  
+- 💾 **Base de datos**: MySQL  
+- 🌐 Comunicación: API REST  
+- 🎨 Estilos: Personalizados (CSS) y componentes React
+
+---
+
+## 📁 Estructura del Proyecto
+
+
+---
+
+## 🚀 Instalación y Ejecución
+
+### 🔙 Backend (Flask)
+
+1. Abre una terminal:
+   ```bash
+   cd backend
+python -m venv env
+(Opcional) Crea y activa un entorno virtual:
+
+bash
+Copiar
+Editar
+python -m venv env
+source env/bin/activate      # Linux/macOS
+env\Scripts\activate.bat     # Windows
+Instala dependencias:
+
+bash
+Copiar
+Editar
 pip install -r requirements.txt
-python app.py
+Inicia el servidor:
 
+bash
+Copiar
+Editar
+python app.py
+Accede al backend desde: http://127.0.0.1:5000
+
+🔜 Frontend (React)
+Abre una nueva terminal:
+
+bash
+Copiar
+Editar
 cd frontend
+Instala dependencias:
+
+bash
+Copiar
+Editar
 npm install
+Ejecuta la app:
+
+bash
+Copiar
+Editar
 npm start
+Accede desde: http://localhost:3000
+
+🛠 Recomendaciones
+Asegúrate de que el backend esté corriendo para evitar errores al hacer fetch desde React.
+
+Si cambias el puerto o dirección del backend, actualiza las rutas en tu frontend (fetch, axios, etc.).
+
+📌 Funcionalidades
+ Inicio de sesión
+
+ Registro de usuarios
+
+ Paneles según roles
+
+ Gestión de solicitudes de viáticos
+
+ Aprobaciones y notificaciones
+
+🧑‍💻 Autor
+Maojg – Proyecto desarrollado para el programa ADSO – SENA
+Repositorio: github.com/Maojg/Viatech2
+
+📄 Licencia
+Proyecto académico – Uso libre con fines educativos.
+
+yaml
+Copiar
+Editar
+
+---
+
+Cuando tengas activada la opción de subir o generar archivos, puedo entregártelo listo para descarga. ¿Deseas que prepare también un ejemplo de cómo desplegar esto en producción más adelante? &#8203;:contentReference[oaicite:0]{index=0}&#8203;
