@@ -1,33 +1,88 @@
 // src/pages/Register.jsx
 import React, { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom'; // 👈 Agregado useNavigate
+import '../styles.css';
 
 export default function Register() {
+  const navigate = useNavigate(); // 👈 Hook para redirigir
   const [formData, setFormData] = useState({
     nombre: '', apellido: '', email: '', telefono: '', password: '', confirmar: ''
   });
 
   const enviarRegistro = (e) => {
     e.preventDefault();
-    // Enviar POST al backend Flask con fetch()
-    fetch('http://localhost:5000/api/register', {
+
+    const { nombre, apellido, email, telefono, password, confirmar } = formData;
+
+    if (!nombre || !apellido || !email || !telefono || !password || !confirmar) {
+      alert('Todos los campos son obligatorios');
+      return;
+    }
+
+    if (password !== confirmar) {
+      alert('Las contraseñas no coinciden');
+      return;
+    }
+
+    fetch('http://localhost:5001/api/register', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(formData)
     })
-      .then(res => res.json())
-      .then(data => console.log(data));
+      .then(res => {
+        if (!res.ok) {
+          return res.json().then(err => {
+            throw new Error(err.mensaje || 'Error desconocido');
+          });
+        }
+        return res.json();
+      })
+      .then(data => {
+        alert(data.mensaje);
+        navigate('/'); // 👈 Redirigir al login
+      })
+      .catch(error => alert(error.message));
   };
 
   return (
-    <form onSubmit={enviarRegistro}>
-      <h2>Registro</h2>
-      <input type="text" placeholder="Nombre" onChange={e => setFormData({ ...formData, nombre: e.target.value })} />
-      <input type="text" placeholder="Apellido" onChange={e => setFormData({ ...formData, apellido: e.target.value })} />
-      <input type="email" placeholder="Correo" onChange={e => setFormData({ ...formData, email: e.target.value })} />
-      <input type="text" placeholder="Teléfono" onChange={e => setFormData({ ...formData, telefono: e.target.value })} />
-      <input type="password" placeholder="Contraseña" onChange={e => setFormData({ ...formData, password: e.target.value })} />
-      <input type="password" placeholder="Confirmar" onChange={e => setFormData({ ...formData, confirmar: e.target.value })} />
-      <button type="submit">Registrarse</button>
-    </form>
+    <div className="background">
+      <div className="container">
+        <img src="/logo.png" alt="Logo" className="logo" />
+        <h1><span style={{ color: '#007bff' }}>ViaTech</span></h1>
+        <p>Registro de Usuario</p>
+
+        <form onSubmit={enviarRegistro}>
+          <div className="form-group">
+            <label>Nombre:</label>
+            <input type="text" placeholder="Ingrese su nombre" onChange={e => setFormData({ ...formData, nombre: e.target.value })} required />
+          </div>
+          <div className="form-group">
+            <label>Apellido:</label>
+            <input type="text" placeholder="Ingrese su apellido" onChange={e => setFormData({ ...formData, apellido: e.target.value })} required />
+          </div>
+          <div className="form-group">
+            <label>Correo Electrónico:</label>
+            <input type="email" placeholder="Ingrese su correo" onChange={e => setFormData({ ...formData, email: e.target.value })} required />
+          </div>
+          <div className="form-group">
+            <label>Teléfono:</label>
+            <input type="text" placeholder="Ingrese su teléfono" onChange={e => setFormData({ ...formData, telefono: e.target.value })} />
+          </div>
+          <div className="form-group">
+            <label>Contraseña:</label>
+            <input type="password" placeholder="Cree una contraseña" onChange={e => setFormData({ ...formData, password: e.target.value })} required />
+          </div>
+          <div className="form-group">
+            <label>Confirmar Contraseña:</label>
+            <input type="password" placeholder="Confirme su contraseña" onChange={e => setFormData({ ...formData, confirmar: e.target.value })} required />
+          </div>
+          <button type="submit" className="btn">Registrarse</button>
+        </form>
+
+        <div className="link-login">
+          ¿Ya tienes cuenta? <Link to="/">Inicia sesión</Link>
+        </div>
+      </div>
+    </div>
   );
 }
