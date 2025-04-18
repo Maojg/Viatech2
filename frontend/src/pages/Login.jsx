@@ -1,4 +1,3 @@
-// src/pages/Login.jsx
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../styles.css';
@@ -13,7 +12,6 @@ export default function Login() {
   const enviarLogin = async (e) => {
     e.preventDefault();
 
-    // Validación básica
     if (!/\S+@\S+\.\S+/.test(email)) {
       setMensaje('Por favor, ingresa un correo válido.');
       return;
@@ -25,9 +23,7 @@ export default function Login() {
     try {
       const res = await fetch('http://localhost:5001/api/login', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password }),
       });
 
@@ -36,11 +32,11 @@ export default function Login() {
       if (!res.ok) {
         throw new Error(data.mensaje || 'Error en la autenticación');
       }
-      
-      // Guardar el rol en localStorage para usarlo en rutas protegidas
+
+      setMensaje(data.mensaje);
       localStorage.setItem('rol', data.rol);
-      
-      // Redirigir según el rol
+
+      // Redirigir por rol
       if (data.rol === 'Administrador') {
         navigate('/admin');
       } else if (data.rol === 'Coordinador') {
@@ -48,9 +44,15 @@ export default function Login() {
       } else if (data.rol === 'Usuario') {
         navigate('/usuarios');
       } else {
-        navigate('/'); // fallback
+        navigate('/');
       }
-      
+    } catch (error) {
+      console.error('Error al iniciar sesión:', error);
+      setMensaje(error.message);
+    } finally {
+      setCargando(false);
+    }
+  };
 
   return (
     <div className="background">
@@ -84,7 +86,11 @@ export default function Login() {
           </button>
         </form>
 
-        {mensaje && <p style={{ color: mensaje.includes('Bienvenido') ? 'green' : 'red' }}>{mensaje}</p>}
+        {mensaje && (
+          <p style={{ color: mensaje.includes('Bienvenido') ? 'green' : 'red' }}>
+            {mensaje}
+          </p>
+        )}
 
         <a className="forgot-password" href="/recuperar">¿Olvidó su contraseña?</a>
       </div>
