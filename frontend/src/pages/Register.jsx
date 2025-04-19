@@ -3,6 +3,8 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom'; // 👈 Agregado useNavigate
 import '../styles.css';
 
+
+
 export default function Register() {
   const navigate = useNavigate(); // 👈 Hook para redirigir
   const [formData, setFormData] = useState({

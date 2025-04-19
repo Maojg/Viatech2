@@ -3,6 +3,8 @@ import React from 'react';
 import '../styles.css'; // ya que lo movimos a src
 import '../App.css'; // Importa tu CSS original si es necesario
 import { Link } from 'react-router-dom'; // Importa Link para navegación
+import { Navigate } from 'react-router-dom';
+
 
 export default function Administrador() {
     return (

@@ -1,6 +1,9 @@
+// src/pages/Login.jsx
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../styles.css';
+
+
 
 export default function Login() {
   const [email, setEmail] = useState('');
@@ -12,6 +15,7 @@ export default function Login() {
   const enviarLogin = async (e) => {
     e.preventDefault();
 
+    // Validación básica
     if (!/\S+@\S+\.\S+/.test(email)) {
       setMensaje('Por favor, ingresa un correo válido.');
       return;
@@ -23,7 +27,9 @@ export default function Login() {
     try {
       const res = await fetch('http://localhost:5001/api/login', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+        },
         body: JSON.stringify({ email, password }),
       });
 
@@ -33,10 +39,10 @@ export default function Login() {
         throw new Error(data.mensaje || 'Error en la autenticación');
       }
 
-      setMensaje(data.mensaje);
+      // Guardar el rol en localStorage para usarlo en rutas protegidas
       localStorage.setItem('rol', data.rol);
 
-      // Redirigir por rol
+      // Redirigir según el rol
       if (data.rol === 'Administrador') {
         navigate('/admin');
       } else if (data.rol === 'Coordinador') {
@@ -44,7 +50,7 @@ export default function Login() {
       } else if (data.rol === 'Usuario') {
         navigate('/usuarios');
       } else {
-        navigate('/');
+        navigate('/'); // fallback
       }
     } catch (error) {
       console.error('Error al iniciar sesión:', error);
@@ -86,11 +92,7 @@ export default function Login() {
           </button>
         </form>
 
-        {mensaje && (
-          <p style={{ color: mensaje.includes('Bienvenido') ? 'green' : 'red' }}>
-            {mensaje}
-          </p>
-        )}
+        {mensaje && <p style={{ color: mensaje.includes('Bienvenido') ? 'green' : 'red' }}>{mensaje}</p>}
 
         <a className="forgot-password" href="/recuperar">¿Olvidó su contraseña?</a>
       </div>
