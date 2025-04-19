@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../styles.css';
 
+
 export default function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -34,6 +35,9 @@ export default function Login() {
       }
 
       setMensaje(data.mensaje);
+      localStorage.setItem('rol', data.rol);
+
+      // Guardar el rol
       localStorage.setItem('rol', data.rol);
 
       // Redirigir por rol
