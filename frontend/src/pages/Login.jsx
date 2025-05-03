@@ -3,14 +3,6 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../styles.css';
 
-<<<<<<< HEAD
-
-<<<<<<< HEAD
-
-=======
->>>>>>> feature/viatech2-rutas
-=======
->>>>>>> parent of 4ce12d3 (Actualizar app.py: agregar roles y mejorar rutas de login y registro)
 export default function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -48,20 +40,8 @@ export default function Login() {
       // Guardar el rol en localStorage para usarlo en rutas protegidas
       localStorage.setItem('rol', data.rol);
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-      // Redirigir según el rol
-=======
-      // Guardar el rol
-      localStorage.setItem('rol', data.rol);
-
-=======
->>>>>>> parent of 4ce12d3 (Actualizar app.py: agregar roles y mejorar rutas de login y registro)
-      // Redirigir por rol
->>>>>>> feature/viatech2-rutas
-      if (data.rol === 'Administrador') {
-        navigate('/admin');
-      } else if (data.rol === 'Coordinador') {
+// Redirigir según el rol
+      if (data.rol === 'Coordinador') {
         navigate('/coordinadores');
       } else if (data.rol === 'Usuario') {
         navigate('/usuarios');

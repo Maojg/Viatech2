@@ -1,15 +1,7 @@
 import React from 'react';
-<<<<<<< HEAD
-import '../styles.css'; // ya que lo movimos a src
-import '../App.css'; // Importa tu CSS original si es necesario
-import { Link } from 'react-router-dom'; // Importa Link para navegación
-import { Navigate } from 'react-router-dom';
-
-=======
 import '../styles.css';
 import '../App.css';
 import { Link, useNavigate } from 'react-router-dom'; // <-- Importamos useNavigate
->>>>>>> feature/viatech2-rutas
 
 export default function Administrador() {
   const navigate = useNavigate();
