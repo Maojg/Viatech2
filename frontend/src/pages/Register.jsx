@@ -8,7 +8,7 @@ import '../styles.css';
 export default function Register() {
   const navigate = useNavigate(); // 👈 Hook para redirigir
   const [formData, setFormData] = useState({
-    nombre: '', apellido: '', email: '', telefono: '', password: '', confirmar: '', id_rol: ''
+    nombre: '', apellido: '', email: '', telefono: '', password: '', confirmar: ''
   });
 
   const enviarRegistro = (e) => {
@@ -78,17 +78,6 @@ export default function Register() {
             <label>Confirmar Contraseña:</label>
             <input type="password" placeholder="Confirme su contraseña" onChange={e => setFormData({ ...formData, confirmar: e.target.value })} required />
           </div>
-          <div className="form-group">
-            <label>Rol:</label>
-            <select onChange={e => setFormData({ ...formData, id_rol: e.target.value })} required>
-              <option value="">Seleccione un rol</option>
-              <option value="1">Administrador</option>
-              <option value="2">Usuario</option>
-              <option value="3">Cordinador</option>
-              <option value="4">Director</option>
-              <option value="5">Nomina</option>
-            </select>
-          </div>  
           <button type="submit" className="btn">Registrarse</button>
         </form>
 
