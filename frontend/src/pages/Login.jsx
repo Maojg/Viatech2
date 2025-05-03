@@ -4,7 +4,10 @@ import { useNavigate } from 'react-router-dom';
 import '../styles.css';
 
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> feature/viatech2-rutas
 export default function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -42,7 +45,14 @@ export default function Login() {
       // Guardar el rol en localStorage para usarlo en rutas protegidas
       localStorage.setItem('rol', data.rol);
 
+<<<<<<< HEAD
       // Redirigir según el rol
+=======
+      // Guardar el rol
+      localStorage.setItem('rol', data.rol);
+
+      // Redirigir por rol
+>>>>>>> feature/viatech2-rutas
       if (data.rol === 'Administrador') {
         navigate('/admin');
       } else if (data.rol === 'Coordinador') {

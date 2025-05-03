@@ -1,8 +1,15 @@
 // src/pages/Usuarios.jsx
 import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import '../styles.css';
 
 export default function Usuarios() {
+  const navigate = useNavigate();
+   // Cierra sesión y limpia el rol
+   const cerrarSesion = () => {
+    localStorage.removeItem('rol');
+    navigate('/');
+  };
   const [usuarios, setUsuarios] = useState([]);
   const [formVisible, setFormVisible] = useState(false);
   const [formData, setFormData] = useState({
@@ -124,6 +131,13 @@ export default function Usuarios() {
             ))}
           </tbody>
         </table>
+        <button onClick={() => navigate(-1)} className="btn-back">
+          ⬅️ Volver
+        </button>
+
+        <button onClick={cerrarSesion} className="btn-back">
+          🔒 Cerrar sesión
+        </button>
       </div>
     </div>
   );
