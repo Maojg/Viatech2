@@ -58,7 +58,7 @@ def register():
     telefono = data.get('telefono')
     password = data.get('password')
     confirmar = data.get('confirmar')
-    id_rol = data.get('id_rol')  # <-- este campo es clave si se usa en el frontend
+    id_rol = data.get('id_rol')  # Asumiendo que este campo viene del frontend
 
     # Validación básica
     if not all([nombre, apellido, email, telefono, password, confirmar, id_rol]):
@@ -67,7 +67,7 @@ def register():
     if password != confirmar:
         return jsonify({"mensaje": "Las contraseñas no coinciden"}), 400
 
-    # Cifrar contraseña
+    # Cifrar la contraseña
     hashed_password = bcrypt.generate_password_hash(password).decode('utf-8')
 
     try:
@@ -83,6 +83,7 @@ def register():
         print("Error en registro:", e)
         return jsonify({"mensaje": "Error en el registro"}), 500
 
+
 @app.route('/api/roles', methods=['GET'])
 def obtener_roles():
     try:
@@ -96,6 +97,10 @@ def obtener_roles():
     except Exception as e:
         print("Error obteniendo roles:", e)
         return jsonify({"mensaje": "Error en el servidor"}), 500
+    
+print("Usuario:", os.getenv("MYSQL_USER"))
+print("Contraseña:", os.getenv("MYSQL_PASSWORD"))
+print("Base de datos:", os.getenv("MYSQL_DB"))
 
 if __name__ == '__main__':
     app.run(debug=True, port=5001)
