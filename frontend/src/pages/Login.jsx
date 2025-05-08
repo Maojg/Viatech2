@@ -37,16 +37,12 @@ export default function Login() {
       toast.success(data.mensaje);
       localStorage.setItem('rol', data.rol);
 
-      // Redirigir por rol
-      if (data.rol === 'Administrador') {
-        navigate('/admin');
-      } else if (data.rol === 'Coordinador') {
-        navigate('/coordinadores');
-      } else if (data.rol === 'Usuario') {
-        navigate('/solicitudes-viaticos');
-      } else {
-        navigate('/');
+      // Redirigir siempre a /inicio si el rol es válido
+      if (['Administrador', 'Coordinador', 'Director', 'Usuario', 'Nómina'].includes(data.rol)) {
+        localStorage.setItem('rol', data.rol); // Esto es correcto
+        navigate('/inicio'); // ✔️ siempre hacia el menú central
       }
+      
 
     } catch (error) {
       console.error('Error al iniciar sesión:', error);

@@ -11,7 +11,7 @@ export default function SolicitudesViaticos() {
     observaciones: '',
     fecha_inicio: '',
     fecha_fin: '',
-    id_ciudad: '', // Se puede popular desde API o lista fija
+    id_ciudad: '',
   });
 
   useEffect(() => {
@@ -20,26 +20,32 @@ export default function SolicitudesViaticos() {
       toast.error('Acceso denegado');
       navigate('/');
     }
-  }, []);
+  }, [navigate]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
-
     const { destino, motivo, fecha_inicio, fecha_fin } = formData;
     if (!destino || !motivo || !fecha_inicio || !fecha_fin) {
       toast.warn('Por favor complete todos los campos obligatorios');
       return;
     }
-
     toast.info('Solicitud preparada (falta conectar al backend)');
     console.log("Datos enviados:", formData);
+  };
+
+  const cerrarSesion = () => {
+    localStorage.removeItem('rol');
+    navigate('/');
   };
 
   return (
     <div className="background">
       <div className="container">
-        <h2>Solicitud de Viáticos</h2>
-        <form onSubmit={handleSubmit}>
+        <img src="/logo.png" alt="Logo MSOLUCIONES" className="logo" />
+
+        <h2 style={{ marginTop: '10px' }}>Solicitud de Viáticos</h2>
+
+        <form className="formulario-solicitud" onSubmit={handleSubmit}>
           <div className="form-group">
             <label>Destino:</label>
             <input
@@ -100,6 +106,21 @@ export default function SolicitudesViaticos() {
 
           <button type="submit" className="btn">Enviar Solicitud</button>
         </form>
+
+        {/* Botones de navegación */}
+        <button onClick={() => navigate(-1)} className="btn-back" style={{ marginTop: '20px' }}>
+          ⬅️ Volver atrás
+        </button>
+        <button onClick={cerrarSesion} className="btn-back">
+          🔒 Cerrar sesión
+        </button>
+
+        <p className="link-login"><strong>Bienvenido Usuario</strong></p>
+        <p className="link-login">Desde aquí puedes registrar tus solicitudes de viáticos.</p>
+
+        <footer style={{ marginTop: '20px', fontSize: '12px', color: '#666' }}>
+          © 2025 MSOLUCIONES - Todos los derechos reservados.
+        </footer>
       </div>
     </div>
   );
