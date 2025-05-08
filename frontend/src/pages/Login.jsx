@@ -35,14 +35,13 @@ export default function Login() {
       }
 
       toast.success(data.mensaje);
-      localStorage.setItem('rol', data.rol);
+      localStorage.setItem('rol', data.rol); // Guardar el rol
+      localStorage.setItem('id_usuario', data.id_usuario); // Guardar el ID del usuario
 
       // Redirigir siempre a /inicio si el rol es válido
       if (['Administrador', 'Coordinador', 'Director', 'Usuario', 'Nómina'].includes(data.rol)) {
-        localStorage.setItem('rol', data.rol); // Esto es correcto
-        navigate('/inicio'); // ✔️ siempre hacia el menú central
+        navigate('/inicio'); // Redirige al menú central
       }
-      
 
     } catch (error) {
       console.error('Error al iniciar sesión:', error);

@@ -39,7 +39,7 @@ def login():
     try:
         cur = mysql.connection.cursor()
         cur.execute("""
-            SELECT u.password, r.nombre_rol 
+            SELECT u.id_usuario, u.password, r.nombre_rol 
             FROM Usuarios u
             LEFT JOIN Roles r ON u.id_rol = r.id_rol
             WHERE u.email = %s
@@ -47,8 +47,12 @@ def login():
         user = cur.fetchone()
         cur.close()
 
-        if user and bcrypt.check_password_hash(user[0], password):
-            return jsonify({"mensaje": "Bienvenido", "rol": user[1]})
+        if user and bcrypt.check_password_hash(user[1], password):
+            return jsonify({
+                "mensaje": "Bienvenido",
+                "rol": user[2],
+                "id_usuario": user[0]  # ← nuevo campo agregado
+            })
         else:
             return jsonify({"mensaje": "Credenciales incorrectas"}), 401
     except Exception as e:
@@ -286,6 +290,36 @@ def actualizar_usuario(id_usuario):
         return jsonify({"mensaje": "Usuario actualizado correctamente"})
     except Exception as e:
         print("Error actualizando usuario:", e)
+        return jsonify({"mensaje": f"Error interno: {str(e)}"}), 500
+
+@app.route('/api/solicitudes', methods=['POST'])
+def crear_solicitud_viatico():
+    data = request.get_json()
+    id_usuario = data.get('id_usuario')
+    destino = data.get('destino')
+    motivo = data.get('motivo')
+    observaciones = data.get('observaciones')
+    fecha_inicio = data.get('fecha_inicio')
+    fecha_fin = data.get('fecha_fin')
+    id_ciudad = data.get('id_ciudad')
+
+    # Validación de campos obligatorios
+    if not all([id_usuario, destino, motivo, fecha_inicio, fecha_fin]):
+        return jsonify({"mensaje": "Faltan campos obligatorios"}), 400
+
+    try:
+        cur = mysql.connection.cursor()
+        cur.execute("""
+            INSERT INTO solicitudes_viaticos 
+            (id_usuario, fecha_solicitud, destino, motivo, estado, observaciones, fecha_inicio, fecha_fin, id_ciudad)
+            VALUES (%s, NOW(), %s, %s, 'Pendiente', %s, %s, %s, %s)
+        """, (id_usuario, destino, motivo, observaciones, fecha_inicio, fecha_fin, id_ciudad))
+
+        mysql.connection.commit()
+        cur.close()
+        return jsonify({"mensaje": "Solicitud registrada correctamente"})
+    except Exception as e:
+        print("Error insertando solicitud:", e)
         return jsonify({"mensaje": f"Error interno: {str(e)}"}), 500
 
     

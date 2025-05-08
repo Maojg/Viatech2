@@ -25,12 +25,41 @@ export default function SolicitudesViaticos() {
   const handleSubmit = (e) => {
     e.preventDefault();
     const { destino, motivo, fecha_inicio, fecha_fin } = formData;
+
+    // Validación de campos obligatorios
     if (!destino || !motivo || !fecha_inicio || !fecha_fin) {
       toast.warn('Por favor complete todos los campos obligatorios');
       return;
     }
-    toast.info('Solicitud preparada (falta conectar al backend)');
-    console.log("Datos enviados:", formData);
+
+    // Realizar el POST al backend
+    fetch("http://localhost:5001/api/solicitudes", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        ...formData,
+        id_usuario: localStorage.getItem('id_usuario') // Correcto
+      })
+    })
+      .then(async (res) => {
+        const data = await res.json();
+        if (!res.ok) {
+          throw new Error(data.mensaje || 'Error al registrar la solicitud');
+        }
+        toast.success(data.mensaje);
+        setFormData({
+          destino: '',
+          motivo: '',
+          observaciones: '',
+          fecha_inicio: '',
+          fecha_fin: '',
+          id_ciudad: '',
+        });
+      })
+      .catch((error) => {
+        console.error("Error al enviar la solicitud:", error);
+        toast.error(error.message);
+      });
   };
 
   const cerrarSesion = () => {
