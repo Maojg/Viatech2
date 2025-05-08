@@ -7,7 +7,13 @@ from dotenv import load_dotenv
 import os
 
 app = Flask(__name__)
-CORS(app, supports_credentials=True, origins=["http://localhost:3000"], methods=["GET", "POST"], allow_headers=["Content-Type"])
+CORS(app, resources={r"/api/*": {"origins": "http://localhost:3000"}}, supports_credentials=True, methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"], allow_headers=["Content-Type"])
+
+
+# @app.before_request
+# def handle_options():
+#     if request.method == 'OPTIONS':
+#         return jsonify({"mensaje": "Método OPTIONS habilitado"}), 200
 
 load_dotenv()
 
@@ -47,7 +53,7 @@ def login():
             return jsonify({"mensaje": "Credenciales incorrectas"}), 401
     except Exception as e:
         print("Error en login:", e)
-        return jsonify({"mensaje": "Error en el servidor"}), 500
+        return jsonify({"mensaje": f"Error interno: {str(e)}"}), 500
 
 @app.route('/api/register', methods=['POST'])
 def register():
@@ -58,10 +64,11 @@ def register():
     telefono = data.get('telefono')
     password = data.get('password')
     confirmar = data.get('confirmar')
-    id_rol = data.get('id_rol')  # Asumiendo que este campo viene del frontend
+    rol_solicitado = data.get('rol_solicitado')  # nuevo campo
+    # id_rol = data.get('id_rol')  # OJO SE COMENTA PARA NUEVA FUNCION SOLICITAR ROL Asumiendo que este campo viene del frontend
 
     # Validación básica
-    if not all([nombre, apellido, email, telefono, password, confirmar, id_rol]):
+    if not all([nombre, apellido, email, telefono, password, confirmar]):
         return jsonify({"mensaje": "Todos los campos son obligatorios"}), 400
 
     if password != confirmar:
@@ -69,19 +76,33 @@ def register():
 
     # Cifrar la contraseña
     hashed_password = bcrypt.generate_password_hash(password).decode('utf-8')
+    id_rol = 2  # Se asigna por defecto el rol Usuario
 
     try:
         cur = mysql.connection.cursor()
+        
+        # Insertar en Usuarios
         cur.execute("""
             INSERT INTO Usuarios (nombre, apellido, email, telefono, password, id_rol)
             VALUES (%s, %s, %s, %s, %s, %s)
         """, (nombre, apellido, email, telefono, hashed_password, id_rol))
+        
+        id_usuario = cur.lastrowid
+
+        # Si hay una solicitud de rol diferente, guardarla
+        if rol_solicitado and rol_solicitado.lower() != 'usuario':
+            cur.execute("""
+                INSERT INTO SolicitudesRol (id_usuario, rol_solicitado)
+                VALUES (%s, %s)
+            """, (id_usuario, rol_solicitado))
+            
         mysql.connection.commit()
         cur.close()
         return jsonify({"mensaje": "Usuario registrado con éxito"}), 200
+    
     except Exception as e:
         print("Error en registro:", e)
-        return jsonify({"mensaje": "Error en el registro"}), 500
+        return jsonify({"mensaje": f"Error interno: {str(e)}"}), 500
 
 
 @app.route('/api/roles', methods=['GET'])
@@ -96,7 +117,179 @@ def obtener_roles():
         return jsonify(resultado)
     except Exception as e:
         print("Error obteniendo roles:", e)
-        return jsonify({"mensaje": "Error en el servidor"}), 500
+        return jsonify({"mensaje": f"Error interno: {str(e)}"}), 500
+
+@app.route('/api/solicitudes-rol', methods=['GET'])
+def obtener_solicitudes_rol():
+    try:
+        cur = mysql.connection.cursor()
+        cur.execute("""
+            SELECT s.id_solicitud, u.id_usuario, u.nombre, u.apellido, u.email,
+                   s.rol_solicitado, s.estado, s.fecha
+            FROM SolicitudesRol s
+            JOIN Usuarios u ON s.id_usuario = u.id_usuario
+            WHERE s.estado = 'Pendiente'
+            ORDER BY s.fecha DESC
+        """)
+        solicitudes = cur.fetchall()
+        cur.close()
+
+        resultado = [
+            {
+                "id_solicitud": s[0],
+                "id_usuario": s[1],
+                "nombre": s[2],
+                "apellido": s[3],
+                "email": s[4],
+                "rol_solicitado": s[5],
+                "estado": s[6],
+                "fecha": s[7].strftime("%Y-%m-%d %H:%M")
+            }
+            for s in solicitudes
+        ]
+
+        return jsonify(resultado)
+    except Exception as e:
+        print("Error obteniendo solicitudes de rol:", e)
+        return jsonify({"mensaje": f"Error interno: {str(e)}"}), 500
+
+@app.route('/api/solicitudes-rol/<int:id_solicitud>', methods=['PUT'])
+def actualizar_solicitud_rol(id_solicitud):
+    data = request.get_json()
+    nuevo_estado = data.get('estado')  # Aprobado o Rechazado
+    nuevo_rol = data.get('nuevo_rol')  # Solo si aprueba
+
+    try:
+        cur = mysql.connection.cursor()
+
+        # Obtener id_usuario de la solicitud
+        cur.execute("SELECT id_usuario FROM SolicitudesRol WHERE id_solicitud = %s", (id_solicitud,))
+        result = cur.fetchone()
+
+        if not result:
+            return jsonify({"mensaje": "Solicitud no encontrada"}), 404
+
+        id_usuario = result[0]
+
+        # Actualizar estado de la solicitud
+        cur.execute("UPDATE SolicitudesRol SET estado = %s WHERE id_solicitud = %s", (nuevo_estado, id_solicitud))
+
+        # Si se aprueba, actualizar el rol del usuario
+        if nuevo_estado == 'Aprobado' and nuevo_rol:
+            cur.execute("SELECT id_rol FROM Roles WHERE nombre_rol = %s", (nuevo_rol,))
+            rol = cur.fetchone()
+            if not rol:
+                return jsonify({"mensaje": "Rol no válido"}), 400
+            cur.execute("UPDATE Usuarios SET id_rol = %s WHERE id_usuario = %s", (rol[0], id_usuario))
+
+        mysql.connection.commit()
+        cur.close()
+        return jsonify({"mensaje": "Solicitud actualizada correctamente"})
+
+    except Exception as e:
+        print("Error actualizando solicitud de rol:", e)
+        return jsonify({"mensaje": f"Error interno: {str(e)}"}), 500
+
+@app.route('/api/historial-solicitudes', methods=['GET'])
+def historial_solicitudes():
+    try:
+        cur = mysql.connection.cursor()
+        cur.execute("""
+            SELECT s.id_solicitud, u.nombre, u.apellido, u.email,
+                   s.rol_solicitado, s.estado, s.fecha
+            FROM SolicitudesRol s
+            JOIN Usuarios u ON s.id_usuario = u.id_usuario
+            WHERE s.estado IN ('Aprobado', 'Rechazado')
+            ORDER BY s.fecha DESC
+        """)
+        rows = cur.fetchall()
+        cur.close()
+
+        resultado = [
+            {
+                "id": r[0],
+                "nombre": r[1],
+                "apellido": r[2],
+                "email": r[3],
+                "rol_solicitado": r[4],
+                "estado": r[5],
+                "fecha": r[6].strftime("%Y-%m-%d %H:%M")
+            } for r in rows
+        ]
+        return jsonify(resultado)
+    except Exception as e:
+        print("Error en historial:", e)
+        return jsonify({"mensaje": f"Error interno: {str(e)}"}), 500
+
+@app.route('/api/usuarios', methods=['GET'])
+def obtener_usuarios():
+    try:
+        cur = mysql.connection.cursor()
+        cur.execute("""
+            SELECT u.id_usuario, u.nombre, u.apellido, u.email, u.telefono, r.nombre_rol, u.id_rol
+            FROM Usuarios u
+            LEFT JOIN Roles r ON u.id_rol = r.id_rol
+        """)
+        usuarios = cur.fetchall()
+        cur.close()
+
+        resultado = [{
+            "id": u[0],
+            "nombre": u[1],
+            "apellido": u[2],
+            "email": u[3],
+            "telefono": u[4],
+            "rol": u[5],         # nombre del rol
+            "id_rol": u[6]       # ← nuevo campo necesario
+        } for u in usuarios]
+
+        return jsonify(resultado)
+    except Exception as e:
+        return jsonify({"mensaje": f"Error interno: {str(e)}"}), 500
+
+@app.route('/api/usuarios/<int:id_usuario>', methods=['DELETE'])
+def eliminar_usuario(id_usuario):
+    try:
+        cur = mysql.connection.cursor()
+        cur.execute("DELETE FROM Usuarios WHERE id_usuario = %s", (id_usuario,))
+        mysql.connection.commit()
+        cur.close()
+        return jsonify({"mensaje": "Usuario eliminado correctamente"})
+    except Exception as e:
+        print("Error eliminando usuario:", e)
+        return jsonify({"mensaje": f"Error interno: {str(e)}"}), 500
+
+@app.route('/api/usuarios/<int:id_usuario>', methods=['PUT'])
+def actualizar_usuario(id_usuario):
+    data = request.get_json()
+    print("📥 Datos recibidos:", data)  # ← para debug en consola
+    nombre = data.get('nombre')
+    apellido = data.get('apellido')
+    email = data.get('email')
+    telefono = data.get('telefono')
+    id_rol = int(data.get('id_rol'))  # <-- cast explícito
+
+    if not all([nombre, apellido, email, telefono, id_rol]):
+        return jsonify({"mensaje": "Faltan campos obligatorios"}), 400
+
+    try:
+        cur = mysql.connection.cursor()
+        cur.execute("""
+            UPDATE Usuarios
+            SET nombre = %s, apellido = %s, email = %s, telefono = %s, id_rol = %s
+            WHERE id_usuario = %s
+        """, (nombre, apellido, email, telefono, id_rol, id_usuario))
+
+        mysql.connection.commit()
+        cur.close()
+
+        return jsonify({"mensaje": "Usuario actualizado correctamente"})
+    except Exception as e:
+        print("Error actualizando usuario:", e)
+        return jsonify({"mensaje": f"Error interno: {str(e)}"}), 500
+
+    
+        
     
 print("Usuario:", os.getenv("MYSQL_USER"))
 print("Contraseña:", os.getenv("MYSQL_PASSWORD"))

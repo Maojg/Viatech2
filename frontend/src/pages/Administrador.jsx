@@ -1,16 +1,23 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import '../styles.css';
 import '../App.css';
 import { Link, useNavigate } from 'react-router-dom'; // <-- Importamos useNavigate
+import { toast } from 'react-toastify';
 
 export default function Administrador() {
   const navigate = useNavigate();
+
+   // Mostrar bienvenida una sola vez cuando se carga el componente
+   useEffect(() => {
+    toast.info('Bienvenido al panel de administración');
+  }, []);
 
   // Cierra sesión y limpia el rol
   const cerrarSesion = () => {
     localStorage.removeItem('rol');
     navigate('/');
   };
+  
 
   return (
     <div className="background">
@@ -25,6 +32,9 @@ export default function Administrador() {
           <Link to="/coordinadores" className="btn">Coordinadores</Link>
           <Link to="/directores" className="btn">Directores</Link>
           <Link to="/informes" className="btn">Informes</Link>
+          <Link to="/solicitudes-rol" className="btn">Solicitudes de Rol</Link>
+          <Link to="/historial-solicitudes" className="btn">📜 Ver Historial de Solicitudes</Link>
+
         </nav>
 
         {/* Botón atrás */}

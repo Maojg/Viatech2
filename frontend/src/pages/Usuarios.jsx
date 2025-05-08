@@ -1,31 +1,42 @@
-// src/pages/Usuarios.jsx
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../styles.css';
+import { toast } from 'react-toastify';
 
 export default function Usuarios() {
   const navigate = useNavigate();
-   // Cierra sesión y limpia el rol
-   const cerrarSesion = () => {
-    localStorage.removeItem('rol');
-    navigate('/');
-  };
   const [usuarios, setUsuarios] = useState([]);
   const [formVisible, setFormVisible] = useState(false);
   const [formData, setFormData] = useState({
     nombre: '', apellido: '', email: '', telefono: '', password: '', confirmar: '', id_rol: ''
   });
+  const [usuarioEditando, setUsuarioEditando] = useState(null); // Nuevo estado: ID del usuario en edición
 
-  // Cargar usuarios al iniciar
+  // Validar acceso
   useEffect(() => {
-    cargarUsuarios();
+    const rol = localStorage.getItem('rol');
+    if (!['Administrador', 'Coordinador', 'Director'].includes(rol)) {
+      toast.error('Acceso denegado');
+      navigate('/');
+    } else {
+      cargarUsuarios();
+      toast.info('Gestión de usuarios del sistema');
+    }
   }, []);
+
+  const cerrarSesion = () => {
+    localStorage.removeItem('rol');
+    navigate('/');
+  };
 
   const cargarUsuarios = () => {
     fetch('http://localhost:5001/api/usuarios')
       .then(res => res.json())
       .then(data => setUsuarios(data))
-      .catch(err => console.error("Error cargando usuarios:", err));
+      .catch(err => {
+        console.error("Error cargando usuarios:", err);
+        toast.error('Error al cargar usuarios');
+      });
   };
 
   const enviarRegistro = (e) => {
@@ -33,27 +44,115 @@ export default function Usuarios() {
     const { nombre, apellido, email, telefono, password, confirmar, id_rol } = formData;
 
     if (!nombre || !apellido || !email || !telefono || !password || !confirmar || !id_rol) {
-      alert('Todos los campos son obligatorios');
+      toast.warn('Todos los campos son obligatorios');
       return;
     }
+
+    if (!/^\d{7,15}$/.test(telefono)) {
+      toast.error('El teléfono debe contener solo números (mínimo 7 dígitos)');
+      return;
+    }
+
     if (password !== confirmar) {
-      alert('Las contraseñas no coinciden');
+      toast.error('Las contraseñas no coinciden');
       return;
     }
 
     fetch('http://localhost:5001/api/register', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(formData)
+      body: JSON.stringify({
+        ...formData,
+        id_rol: parseInt(formData.id_rol) // Forzar conversión a entero
+      })
     })
       .then(res => res.json())
       .then(data => {
-        alert(data.mensaje);
+        toast.success(data.mensaje);
         setFormVisible(false);
-        cargarUsuarios(); // recargar tabla
+        cargarUsuarios();
         setFormData({ nombre: '', apellido: '', email: '', telefono: '', password: '', confirmar: '', id_rol: '' });
       })
-      .catch(err => alert('Error registrando usuario'));
+      .catch(() => toast.error('Error registrando usuario'));
+  };
+
+  const eliminarUsuario = (id) => {
+    if (window.confirm('¿Seguro que deseas eliminar este usuario?')) {
+      fetch(`http://localhost:5001/api/usuarios/${id}`, {
+        method: 'DELETE'
+      })
+      .then(res => res.json())
+      .then(data => {
+        toast.success(data.mensaje);
+        cargarUsuarios();
+      })
+      .catch(() => toast.error('Error eliminando usuario'));
+    }
+  };
+
+  const editarUsuario = (usuario) => {
+    console.log("Usuario seleccionado para editar:", usuario); // Log para depuración
+    setFormVisible(true);
+    setFormData({
+      nombre: usuario.nombre || '',
+    apellido: usuario.apellido || '',
+    email: usuario.email || '',
+    telefono: usuario.telefono || '',
+    password: '', 
+    confirmar: '', 
+    id_rol: usuario.id_rol ? usuario.id_rol.toString() : '' // ← muy importante
+    });
+    setUsuarioEditando(usuario.id); // Nuevo estado: ID del usuario en edición
+  };
+
+  const actualizarUsuario = () => {
+    // Validación previa
+    if (!formData.id_rol || isNaN(parseInt(formData.id_rol))) {
+      toast.warn('Debes seleccionar un rol válido');
+      return;
+    }
+
+    if (!/^\d{7,15}$/.test(formData.telefono)) {
+      toast.error('El teléfono debe contener solo números (mínimo 7 dígitos)');
+      return;
+    }
+
+    // Log de los datos a actualizar
+    console.log("Datos a actualizar:", {
+      nombre: formData.nombre,
+      apellido: formData.apellido,
+      email: formData.email,
+      telefono: formData.telefono,
+      id_rol: parseInt(formData.id_rol)
+    });
+
+    console.log("ID del usuario editando:", usuarioEditando);
+
+    fetch(`http://localhost:5001/api/usuarios/${usuarioEditando}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        nombre: formData.nombre,
+        apellido: formData.apellido,
+        email: formData.email,
+        telefono: formData.telefono,
+        id_rol: parseInt(formData.id_rol) // Aseguramos que sea número
+      })
+    })
+      .then(async res => {
+        const data = await res.json(); // Siempre intentar parsear JSON
+        if (!res.ok) {
+          throw new Error(data.mensaje || 'Error inesperado del servidor');
+        }
+        toast.success(data.mensaje);
+        setUsuarioEditando(null);
+        setFormVisible(false);
+        cargarUsuarios();
+      })
+      .catch(error => {
+        console.error("Error actualizando usuario:", error);
+        toast.error(`Error actualizando: ${error.message}`);
+      });
   };
 
   return (
@@ -67,7 +166,10 @@ export default function Usuarios() {
         </button>
 
         {formVisible && (
-          <form className="formulario" onSubmit={enviarRegistro}>
+          <form onSubmit={(e) => {
+            e.preventDefault();
+            usuarioEditando ? actualizarUsuario() : enviarRegistro(e);
+          }} className="formulario">
             <div className="form-group">
               <label>Nombre:</label>
               <input type="text" value={formData.nombre} onChange={e => setFormData({ ...formData, nombre: e.target.value })} />
@@ -97,12 +199,13 @@ export default function Usuarios() {
               <select value={formData.id_rol} onChange={e => setFormData({ ...formData, id_rol: e.target.value })}>
                 <option value="">Seleccione un rol</option>
                 <option value="1">Administrador</option>
-                <option value="2">Coordinador</option>
-                <option value="3">Director</option>
-                <option value="4">Usuario</option>
+                <option value="2">Usuario</option>
+                <option value="3">Coordinador</option>
+                <option value="4">Director</option>
+                <option value="5">Nómina</option>
               </select>
             </div>
-            <button className="btn" type="submit">Registrar</button>
+            <button className="btn" type="submit">{usuarioEditando ? 'Actualizar' : 'Registrar'}</button>
           </form>
         )}
 
@@ -122,22 +225,20 @@ export default function Usuarios() {
                 <td>{usuario.id}</td>
                 <td>{usuario.nombre} {usuario.apellido}</td>
                 <td>{usuario.email}</td>
-                <td>{usuario.rol}</td>
+                <td>{usuario.rol}</td> {/* Visible */}
                 <td>
-                  <button className="btn-edit">Editar</button>
-                  <button className="btn-delete">Eliminar</button>
+                    <input type="hidden" value={usuario.id_rol} /> {/* Usado en edición */}</td>
+                <td>
+                  <button className="btn-edit" onClick={() => editarUsuario(usuario)}>Editar</button>
+                  <button className="btn-delete" onClick={() => eliminarUsuario(usuario.id)}>Eliminar</button>
                 </td>
               </tr>
             ))}
           </tbody>
         </table>
-        <button onClick={() => navigate(-1)} className="btn-back">
-          ⬅️ Volver
-        </button>
 
-        <button onClick={cerrarSesion} className="btn-back">
-          🔒 Cerrar sesión
-        </button>
+        <button onClick={() => navigate(-1)} className="btn-back">⬅️ Volver</button>
+        <button onClick={cerrarSesion} className="btn-back">🔒 Cerrar sesión</button>
       </div>
     </div>
   );

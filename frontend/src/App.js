@@ -4,50 +4,63 @@ import Register from './pages/Register';
 import Usuarios from './pages/Usuarios';
 import Administrador from './pages/Administrador';
 import Coordinadores from './pages/Coordinadores';
-// Agrega aquí las demás páginas que uses (Directores, Informes, etc.)
-
-const userRole = localStorage.getItem("rol");
-
+import SolicitudesRol from './pages/SolicitudesRol';
+import HistorialSolicitudes from './pages/HistorialSolicitudes';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+// import Directores from './pages/Directores'; // Descomenta si existe
 
 function App() {
-  const userRole = localStorage.getItem('rol'); // <- aquí se obtiene el rol
+  const userRole = localStorage.getItem('rol');
 
-  // Función que valida el acceso basado en rol o si es administrador
+  // Valida si el rol está permitido
   const tieneAcceso = (rolesPermitidos) => {
-    return rolesPermitidos.includes(userRole) || userRole === 'Administrador';
+    return rolesPermitidos.includes(userRole);
   };
 
   return (
     <Router>
       <Routes>
+        {/* Públicas */}
         <Route path="/" element={<Login />} />
         <Route path="/registro" element={<Register />} />
+
+        {/* Privadas según roles */}
         <Route
           path="/admin"
           element={tieneAcceso(['Administrador']) ? <Administrador /> : <Navigate to="/" />}
         />
+
         <Route
           path="/usuarios"
-          element={tieneAcceso(['Usuario']) ? <Usuarios /> : <Navigate to="/" />}
+          element={tieneAcceso(['Administrador', 'Coordinador', 'Director']) ? <Usuarios /> : <Navigate to="/" />}
         />
+
         <Route
           path="/coordinadores"
-          element={tieneAcceso(['Coordinador']) ? <Coordinadores /> : <Navigate to="/" />}
+          element={tieneAcceso(['Administrador']) ? <Coordinadores /> : <Navigate to="/" />}
         />
-        {/* Ejemplo si tienes otras páginas */}
+
+        <Route
+          path="/solicitudes-rol"
+          element={userRole === 'Administrador' ? <SolicitudesRol /> : <Navigate to="/" />}
+        />
+
+        <Route
+          path="/historial-solicitudes"
+          element={userRole === 'Administrador' ? <HistorialSolicitudes /> : <Navigate to="/" />}
+        />
+
+
         {/* 
         <Route
           path="/directores"
-          element={tieneAcceso(['Director']) ? <Directores /> : <Navigate to="/" />}
+          element={tieneAcceso(['Administrador']) ? <Directores /> : <Navigate to="/" />}
         />
         */}
-        <Route path="/usuarios" element={<Usuarios />} />
-        <Route path="/admin" element={
-          userRole === 'admin' ? <Administrador /> : <Navigate to="/" />
-} />
-    
-
       </Routes>
+
+      <ToastContainer position="top-right" autoClose={3000} />
     </Router>
   );
 }

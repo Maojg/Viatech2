@@ -1,145 +1,221 @@
+/* ---------------------------------
+   ESTILOS GENERALES
+----------------------------------*/
 body {
     font-family: Arial, sans-serif;
     background-color: #f4f4f4;
     margin: 0;
     padding: 0;
-}
-
-.background {
-    display: flex;
-    justify-content: center;
-    align-items: center;
+  }
+  
+  h1 {
+    margin: 10px 0;
+    color: #333;
+  }
+  
+  p {
+    color: #666;
+    margin-bottom: 20px;
+  }
+  
+  /* ---------------------------------
+     LAYOUT Y CONTENEDORES
+  ----------------------------------*/
+  .background {
+    background-color: #f0f2f5;
     height: 100vh;
-}
-
-.container {
-    background: #fff;
-    padding: 20px 40px;
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .container {
+    background-color: white;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
     text-align: center;
-    width: 100%;
-    max-width: 400px;
-}
-
-.logo {
+    width: 95%;
+    max-width: 1100px;
+    margin: 30px auto;
+    overflow-x: auto;
+  }
+  
+  .logo {
     width: 150px;
     height: auto;
     margin-bottom: 20px;
-}
-
-h1 {
-    margin: 10px 0;
-    color: #333;
-}
-
-p {
-    color: #666;
-    margin-bottom: 20px;
-}
-
-form {
+  }
+  
+  /* ---------------------------------
+     FORMULARIOS
+  ----------------------------------*/
+  form {
     margin-top: 20px;
-}
-
-.form-group {
+  }
+  
+  .form-group {
     margin-bottom: 15px;
     text-align: left;
-}
-
-label {
+  }
+  
+  label {
     display: block;
     margin-bottom: 5px;
     font-weight: bold;
     color: #333;
-}
-
-input[type="text"], input[type="email"], input[type="password"] {
+  }
+  
+  input[type="text"],
+  input[type="email"],
+  input[type="password"] {
     width: 100%;
     padding: 10px;
     margin: 5px 0 10px;
     border: 1px solid #ccc;
     border-radius: 4px;
     box-sizing: border-box;
-}
-
-button.btn {
+  }
+  
+  /* ---------------------------------
+     BOTONES GENERALES
+  ----------------------------------*/
+  button.btn,
+  a.btn {
     background-color: #0056b3;
     color: #fff;
     padding: 10px 15px;
     border: none;
     border-radius: 4px;
     cursor: pointer;
+    text-align: center;
     width: 100%;
-}
-
-button.btn:hover {
+    max-width: 150px;
+    text-decoration: none;
+    display: inline-block;
+  }
+  
+  button.btn:hover,
+  a.btn:hover {
     background-color: #003d80;
-}
-
-.forgot-password {
+  }
+  
+  /* Botones específicos */
+  .btn-back {
+    margin-top: 20px;
+    background-color: #6c757d;
+  }
+  
+  .btn-back:hover {
+    background-color: #5a6268;
+  }
+  
+  .btn-edit {
+    background-color: #28a745;
+  }
+  
+  .btn-edit:hover {
+    background-color: #218838;
+  }
+  
+  .btn-delete {
+    background-color: #dc3545;
+  }
+  
+  .btn-delete:hover {
+    background-color: #c82333;
+  }
+  
+  /* ---------------------------------
+     LINKS Y NAVEGACIÓN
+  ----------------------------------*/
+  .forgot-password {
     display: block;
     margin-top: 15px;
     color: #0056b3;
     text-decoration: none;
     text-align: center;
-}
-
-.forgot-password:hover {
+  }
+  
+  .forgot-password:hover {
     color: #003d80;
     text-decoration: underline;
-}
-
-.button-group {
-    display: flex;
-    justify-content: space-between;
-    gap: 10px;
-}
-
-a.btn {
-    display: inline-block;
-    background-color: #0056b3;
-    color: #fff;
-    padding: 10px 15px;
-    border-radius: 4px;
-    text-decoration: none;
-    text-align: center;
-    width: 100%;
-    max-width: 150px;
-}
-
-a.btn:hover {
-    background-color: #003d80;
-}
-
-.link-login {
+  }
+  
+  .link-login {
     text-align: center;
     margin-top: 15px;
     font-size: 14px;
     color: #333;
-}
-
-.link-login a {
+  }
+  
+  .link-login a {
     color: #0056b3;
     text-decoration: none;
     font-weight: bold;
-}
-
-.link-login a:hover {
+  }
+  
+  .link-login a:hover {
     color: #003d80;
     text-decoration: underline;
-}
-
-.btn-back {
-    margin-top: 20px;
-    background-color: #6c757d;
-    color: white;
-    padding: 8px 14px;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
   }
-  .btn-back:hover {
-    background-color: #5a6268;
+  
+  /* ---------------------------------
+     TABLAS Y CONTENIDO
+  ----------------------------------*/
+  .table-container {
+    width: 100%;
+    overflow-x: auto;
+    margin-top: 20px;
+    border-radius: 5px;
+  }
+  
+  .user-table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 700px;
+  }
+  
+  .user-table th,
+  .user-table td {
+    padding: 10px;
+    border: 1px solid #ccc;
+    text-align: center;
+    white-space: nowrap;
+  }
+  
+  /* ---------------------------------
+     GRUPOS DE BOTONES (NAVEGACIÓN)
+  ----------------------------------*/
+  .button-group {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+  }
+  
+  /* ---------------------------------
+     RESPONSIVE DESIGN
+  ----------------------------------*/
+  @media (max-width: 768px) {
+    .user-table {
+      font-size: 12px;
+      overflow-x: auto;
+      display: block;
+    }
+  
+    .container {
+      padding: 20px;
+    }
+  
+    .button-group {
+      flex-direction: column;
+      align-items: center;
+    }
+  
+    button.btn,
+    a.btn {
+      width: 100%;
+      max-width: none;
+    }
   }
   

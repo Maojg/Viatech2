@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../styles.css';
+import { Link } from 'react-router-dom';
+import { toast } from 'react-toastify';
 
 
 export default function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [mensaje, setMensaje] = useState('');
   const [cargando, setCargando] = useState(false);
   const navigate = useNavigate();
 
@@ -14,12 +15,11 @@ export default function Login() {
     e.preventDefault();
 
     if (!/\S+@\S+\.\S+/.test(email)) {
-      setMensaje('Por favor, ingresa un correo válido.');
+      toast.error('Por favor, ingresa un correo válido.');
       return;
     }
 
     setCargando(true);
-    setMensaje('');
 
     try {
       const res = await fetch('http://localhost:5001/api/login', {
@@ -28,20 +28,13 @@ export default function Login() {
         body: JSON.stringify({ email, password }),
       });
 
-   
-  
-
-
       const data = await res.json();
 
       if (!res.ok) {
         throw new Error(data.mensaje || 'Error en la autenticación');
       }
 
-      setMensaje(data.mensaje);
-      localStorage.setItem('rol', data.rol);
-
-      // Guardar el rol
+      toast.success(data.mensaje);
       localStorage.setItem('rol', data.rol);
 
       // Redirigir por rol
@@ -50,13 +43,14 @@ export default function Login() {
       } else if (data.rol === 'Coordinador') {
         navigate('/coordinadores');
       } else if (data.rol === 'Usuario') {
-        navigate('/usuarios');
+        navigate('/solicitudes-viaticos');
       } else {
         navigate('/');
       }
+
     } catch (error) {
       console.error('Error al iniciar sesión:', error);
-      setMensaje(error.message);
+      toast.error(error.message);
     } finally {
       setCargando(false);
     }
@@ -94,13 +88,10 @@ export default function Login() {
           </button>
         </form>
 
-        {mensaje && (
-          <p style={{ color: mensaje.includes('Bienvenido') ? 'green' : 'red' }}>
-            {mensaje}
-          </p>
-        )}
-
-        <a className="forgot-password" href="/recuperar">¿Olvidó su contraseña?</a>
+        <a className="forgot-password" href="/recuperar">¿Olvidaste tu contraseña?</a>
+        <div className="link-login">
+          ¿No tienes cuenta? <Link to="/registro">¡Regístrate aquí!</Link>
+        </div>
       </div>
     </div>
   );

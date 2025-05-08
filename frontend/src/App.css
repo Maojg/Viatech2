@@ -1,38 +1,70 @@
-.App {
+/* ---------------------------------
+   ESTILOS GENERALES DE LA APLICACIÓN
+----------------------------------*/
+
+/* Reset básico */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+/* Transiciones suaves */
+button,
+a,
+input,
+select {
+  transition: all 0.3s ease;
+  font-family: inherit;
+}
+
+/* Placeholder con color tenue */
+input::placeholder {
+  color: #999;
+  font-style: italic;
+}
+
+/* Estado de foco para inputs */
+input:focus {
+  border-color: #007bff;
+  outline: none;
+}
+
+/* Botones deshabilitados */
+button:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+/* Contenido principal centrado en pantallas pequeñas */
+main {
+  padding: 20px;
+  max-width: 1200px;
+  margin: auto;
+}
+
+/* Toast personalizados si usas react-toastify */
+.Toastify__toast--success {
+  background-color: #28a745;
+}
+
+.Toastify__toast--error {
+  background-color: #dc3545;
+}
+
+.Toastify__toast--info {
+  background-color: #17a2b8;
+}
+
+.Toastify__toast-body {
+  font-family: Arial, sans-serif;
+  font-size: 14px;
+}
+
+/* Footer global */
+footer {
+  margin-top: 30px;
   text-align: center;
-}
-
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
-}
-
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
-}
-
-.App-link {
-  color: #61dafb;
-}
-
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+  font-size: 12px;
+  color: #999;
 }

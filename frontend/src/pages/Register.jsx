@@ -2,13 +2,14 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom'; // 👈 Agregado useNavigate
 import '../styles.css';
+import { toast } from 'react-toastify';
 
 
 
 export default function Register() {
   const navigate = useNavigate(); // 👈 Hook para redirigir
   const [formData, setFormData] = useState({
-    nombre: '', apellido: '', email: '', telefono: '', password: '', confirmar: ''
+    nombre: '', apellido: '', email: '', telefono: '', password: '', confirmar: '', rol_solicitado: ""
   });
 
   const enviarRegistro = (e) => {
@@ -17,12 +18,12 @@ export default function Register() {
     const { nombre, apellido, email, telefono, password, confirmar } = formData;
 
     if (!nombre || !apellido || !email || !telefono || !password || !confirmar) {
-      alert('Todos los campos son obligatorios');
+      toast.error('Todos los campos son obligatorios');
       return;
     }
 
     if (password !== confirmar) {
-      alert('Las contraseñas no coinciden');
+      toast.error('Las contraseñas no coinciden');
       return;
     }
 
@@ -43,7 +44,7 @@ export default function Register() {
         alert(data.mensaje);
         navigate('/'); // 👈 Redirigir al login
       })
-      .catch(error => alert(error.message));
+      .catch(error => toast.error(error.message));
   };
 
   return (
@@ -78,6 +79,14 @@ export default function Register() {
             <label>Confirmar Contraseña:</label>
             <input type="password" placeholder="Confirme su contraseña" onChange={e => setFormData({ ...formData, confirmar: e.target.value })} required />
           </div>
+          <div className="form-group">
+            <label>¿Desea solicitar otro rol? (opcional):</label>
+            <input
+              type="text"
+              placeholder="Administrador, Usuario, Coordinador, Director, Nómina"
+              onChange={e => setFormData({ ...formData, rol_solicitado: e.target.value })}
+            />
+          </div>  
           <button type="submit" className="btn">Registrarse</button>
         </form>
 
