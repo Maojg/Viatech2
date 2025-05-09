@@ -13,33 +13,32 @@ export default function SolicitudesViaticos() {
     fecha_fin: '',
     id_ciudad: '',
   });
+  const [solicitudes, setSolicitudes] = useState([]);
+  const rol = localStorage.getItem('rol');
 
   useEffect(() => {
-    const rol = localStorage.getItem('rol');
-    if (rol !== 'Usuario') {
+    if (!rol) {
       toast.error('Acceso denegado');
       navigate('/');
     }
-  }, [navigate]);
+  }, [navigate, rol]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
     const { destino, motivo, fecha_inicio, fecha_fin } = formData;
 
-    // Validación de campos obligatorios
     if (!destino || !motivo || !fecha_inicio || !fecha_fin) {
       toast.warn('Por favor complete todos los campos obligatorios');
       return;
     }
 
-    // Realizar el POST al backend
     fetch("http://localhost:5001/api/solicitudes", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         ...formData,
-        id_usuario: localStorage.getItem('id_usuario') // Correcto
-      })
+        id_usuario: localStorage.getItem('id_usuario'),
+      }),
     })
       .then(async (res) => {
         const data = await res.json();
@@ -62,94 +61,132 @@ export default function SolicitudesViaticos() {
       });
   };
 
+  const cargarSolicitudes = () => {
+    fetch("http://localhost:5001/api/solicitudes/pendientes", {
+      method: "GET",
+      headers: { "Content-Type": "application/json" },
+    })
+      .then(async (res) => {
+        const data = await res.json();
+        if (!res.ok) {
+          throw new Error(data.mensaje || 'Error al cargar las solicitudes');
+        }
+        setSolicitudes(data);
+      })
+      .catch((error) => {
+        console.error("Error al cargar las solicitudes:", error);
+        toast.error(error.message);
+      });
+  };
+
   const cerrarSesion = () => {
     localStorage.removeItem('rol');
+    localStorage.removeItem('id_usuario');
     navigate('/');
   };
 
   return (
     <div className="background">
       <div className="container">
-        <img src="/logo.png" alt="Logo MSOLUCIONES" className="logo" />
+        <img src="/logo.png" className="logo" alt="Logo" />
+        <h2>Gestión de Solicitudes de Viáticos</h2>
 
-        <h2 style={{ marginTop: '10px' }}>Solicitud de Viáticos</h2>
+        {rol === 'Usuario' && (
+          <form className="formulario-solicitud" onSubmit={handleSubmit}>
+            <div className="form-group">
+              <label>Destino:</label>
+              <input
+                type="text"
+                value={formData.destino}
+                onChange={(e) => setFormData({ ...formData, destino: e.target.value })}
+                required
+              />
+            </div>
 
-        <form className="formulario-solicitud" onSubmit={handleSubmit}>
-          <div className="form-group">
-            <label>Destino:</label>
-            <input
-              type="text"
-              value={formData.destino}
-              onChange={(e) => setFormData({ ...formData, destino: e.target.value })}
-              required
-            />
+            <div className="form-group">
+              <label>Motivo:</label>
+              <input
+                type="text"
+                value={formData.motivo}
+                onChange={(e) => setFormData({ ...formData, motivo: e.target.value })}
+                required
+              />
+            </div>
+
+            <div className="form-group">
+              <label>Observaciones:</label>
+              <textarea
+                value={formData.observaciones}
+                onChange={(e) => setFormData({ ...formData, observaciones: e.target.value })}
+              ></textarea>
+            </div>
+
+            <div className="form-group">
+              <label>Fecha Inicio:</label>
+              <input
+                type="date"
+                value={formData.fecha_inicio}
+                onChange={(e) => setFormData({ ...formData, fecha_inicio: e.target.value })}
+                required
+              />
+            </div>
+
+            <div className="form-group">
+              <label>Fecha Fin:</label>
+              <input
+                type="date"
+                value={formData.fecha_fin}
+                onChange={(e) => setFormData({ ...formData, fecha_fin: e.target.value })}
+                required
+              />
+            </div>
+
+            <div className="form-group">
+              <label>Ciudad (ID):</label>
+              <input
+                type="number"
+                value={formData.id_ciudad}
+                onChange={(e) => setFormData({ ...formData, id_ciudad: e.target.value })}
+                placeholder="Ej: 101 (Bogotá)"
+              />
+            </div>
+
+            <button type="submit" className="btn">Enviar Solicitud</button>
+          </form>
+        )}
+
+        {rol === 'Coordinador' && (
+          <div>
+            <button onClick={cargarSolicitudes} className="btn">🔄 Cargar Solicitudes Pendientes</button>
+            <table className="table">
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Destino</th>
+                  <th>Motivo</th>
+                  <th>Estado</th>
+                  <th>Acciones</th>
+                </tr>
+              </thead>
+              <tbody>
+                {solicitudes.map((solicitud) => (
+                  <tr key={solicitud.id_solicitud}>
+                    <td>{solicitud.id_solicitud}</td>
+                    <td>{solicitud.destino}</td>
+                    <td>{solicitud.motivo}</td>
+                    <td>{solicitud.estado}</td>
+                    <td>
+                      <button className="btn">Aprobar</button>
+                      <button className="btn">Rechazar</button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
+        )}
 
-          <div className="form-group">
-            <label>Motivo:</label>
-            <input
-              type="text"
-              value={formData.motivo}
-              onChange={(e) => setFormData({ ...formData, motivo: e.target.value })}
-              required
-            />
-          </div>
-
-          <div className="form-group">
-            <label>Observaciones:</label>
-            <textarea
-              value={formData.observaciones}
-              onChange={(e) => setFormData({ ...formData, observaciones: e.target.value })}
-            ></textarea>
-          </div>
-
-          <div className="form-group">
-            <label>Fecha Inicio:</label>
-            <input
-              type="date"
-              value={formData.fecha_inicio}
-              onChange={(e) => setFormData({ ...formData, fecha_inicio: e.target.value })}
-              required
-            />
-          </div>
-
-          <div className="form-group">
-            <label>Fecha Fin:</label>
-            <input
-              type="date"
-              value={formData.fecha_fin}
-              onChange={(e) => setFormData({ ...formData, fecha_fin: e.target.value })}
-              required
-            />
-          </div>
-
-          <div className="form-group">
-            <label>Ciudad (ID):</label>
-            <input
-              type="number"
-              value={formData.id_ciudad}
-              onChange={(e) => setFormData({ ...formData, id_ciudad: e.target.value })}
-              placeholder="Ej: 101 (Bogotá)"
-            />
-          </div>
-
-          <button type="submit" className="btn">Enviar Solicitud</button>
-        </form>
-
-        {/* Botones de navegación */}
-        <button onClick={() => navigate(-1)} className="btn-back" style={{ marginTop: '20px' }}>
-          ⬅️ Volver atrás
-        </button>
-        <button onClick={cerrarSesion} className="btn-back">
-          🔒 Cerrar sesión
-        </button>
-
-        <p className="link-login"><strong>Bienvenido Usuario</strong></p>
-        <p className="link-login">Desde aquí puedes registrar tus solicitudes de viáticos.</p>
-
-        <footer style={{ marginTop: '20px', fontSize: '12px', color: '#666' }}>
-          © 2025 MSOLUCIONES - Todos los derechos reservados.
-        </footer>
+        <button onClick={cerrarSesion} className="btn-back">🔒 Cerrar sesión</button>
       </div>
     </div>
   );

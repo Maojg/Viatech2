@@ -321,6 +321,59 @@ def crear_solicitud_viatico():
     except Exception as e:
         print("Error insertando solicitud:", e)
         return jsonify({"mensaje": f"Error interno: {str(e)}"}), 500
+    
+@app.route('/api/solicitudes/pendientes', methods=['GET'])
+def obtener_solicitudes_pendientes():
+    try:
+        cur = mysql.connection.cursor()
+        cur.execute("""
+            SELECT s.id_solicitud, u.nombre, u.apellido, s.destino, s.motivo, s.fecha_inicio, s.fecha_fin, s.estado
+            FROM solicitudes_viaticos s
+            JOIN usuarios u ON s.id_usuario = u.id_usuario
+            WHERE s.estado = 'Pendiente'
+            ORDER BY s.fecha_solicitud DESC
+        """)
+        solicitudes = cur.fetchall()
+        cur.close()
+
+        resultado = [
+            {
+                "id_solicitud": s[0],
+                "nombre_usuario": s[1] + " " + s[2],
+                "destino": s[3],
+                "motivo": s[4],
+                "fecha_inicio": s[5].strftime("%Y-%m-%d"),
+                "fecha_fin": s[6].strftime("%Y-%m-%d"),
+                "estado": s[7]
+            } for s in solicitudes
+        ]
+        return jsonify(resultado)
+    except Exception as e:
+        print("Error obteniendo solicitudes pendientes:", e)
+        return jsonify({"mensaje": f"Error interno: {str(e)}"}), 500
+    
+@app.route('/api/solicitudes/<int:id_solicitud>', methods=['PUT'])
+def actualizar_estado_solicitud(id_solicitud):
+    data = request.get_json()
+    nuevo_estado = data.get('estado')
+
+    if nuevo_estado not in ['Aprobado', 'Rechazado']:
+        return jsonify({"mensaje": "Estado inválido"}), 400
+
+    try:
+        cur = mysql.connection.cursor()
+        cur.execute("""
+            UPDATE solicitudes_viaticos
+            SET estado = %s
+            WHERE id_solicitud = %s
+        """, (nuevo_estado, id_solicitud))
+        mysql.connection.commit()
+        cur.close()
+        return jsonify({"mensaje": "Estado actualizado correctamente"})
+    except Exception as e:
+        print("Error actualizando estado:", e)
+        return jsonify({"mensaje": f"Error interno: {str(e)}"}), 500
+
 
     
         
