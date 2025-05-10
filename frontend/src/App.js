@@ -5,6 +5,7 @@ import Register from './pages/Register';
 import Usuarios from './pages/Usuarios';
 import Administrador from './pages/Administrador';
 import Coordinadores from './pages/Coordinadores'; // Aún puedes usarlo si tienes lógica extra
+import Directores from './pages/Directores';
 import SolicitudesRol from './pages/SolicitudesRol';
 import HistorialSolicitudes from './pages/HistorialSolicitudes';
 import Inicio from './pages/Inicio';
@@ -30,7 +31,8 @@ function App() {
 
         <Route path="/admin" element={tieneAcceso(['Administrador']) ? <Administrador /> : <Navigate to="/" />} />
         <Route path="/usuarios" element={tieneAcceso(['Administrador', 'Coordinador', 'Director']) ? <Usuarios /> : <Navigate to="/" />} />
-        <Route path="/coordinadores" element={tieneAcceso(['Administrador', 'Director', 'Coordinador']) ? <Coordinadores /> : <Navigate to="/" />} />
+        <Route path="/coordinadores" element={tieneAcceso(['Administrador', 'Director']) ? <Coordinadores /> : <Navigate to="/" />} />
+        <Route path="/Directores" element={tieneAcceso(['Administrador', 'Director', 'Coordinador']) ? <Directores /> : <Navigate to="/" />} />
         <Route path="/solicitudes-rol" element={tieneAcceso(['Administrador']) ? <SolicitudesRol /> : <Navigate to="/" />} />
         <Route path="/historial-solicitudes" element={tieneAcceso(['Administrador']) ? <HistorialSolicitudes /> : <Navigate to="/" />} />
         

@@ -176,6 +176,7 @@ a.btn:hover {
 
 .user-table {
     width: 100%;
+    overflow: auto;
     border-collapse: collapse;
     min-width: 700px;
 }

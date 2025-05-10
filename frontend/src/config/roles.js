@@ -11,12 +11,12 @@ const accesosPorRol = {
   ],
   Coordinador: [
     { nombre: "Revisar Solicitudes", ruta: "/coordinadores" },
+    // { nombre: "Revisar Solicitudes", ruta: "/solicitudes" }, // ← este se podria tambien
     { nombre: "Informes", ruta: "/informes" }
   ],
   Director: [
-    { nombre: "Revisar Solicitudes", ruta: "/directores" },
-    { nombre: "Informes", ruta: "/informes" },
-    { nombre: "Coordinadores", ruta: "/coordinadores" }
+    { nombre: "Revisar Solicitudes", ruta: "/Directores" },
+    { nombre: "Informes", ruta: "/informes" }
   ],
   Nómina: [
     { nombre: "Gestión de Desembolsos", ruta: "/nomina" },

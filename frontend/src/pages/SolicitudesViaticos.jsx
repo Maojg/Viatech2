@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../styles.css';
@@ -29,6 +28,14 @@ export default function SolicitudesViaticos() {
   const [solicitudes, setSolicitudes] = useState([]);
   const [estadoFiltro, setEstadoFiltro] = useState('');
 
+  // 💡 Helper para determinar las acciones disponibles según el rol
+const mostrarAcciones = (rol) => {
+  if (rol === 'Coordinador') return ['AprobadoCoor', 'Rechazado'];
+  if (rol === 'Director') return ['AprobadoDir', 'Rechazado'];
+  if (rol === 'Nómina') return ['Desembolsado'];
+  return [];
+};
+
   useEffect(() => {
     if (!rol) {
       toast.error('Acceso denegado');
@@ -43,6 +50,9 @@ export default function SolicitudesViaticos() {
 
     if (rol === 'Usuario') {
       endpoint += `/usuario/${id_usuario}`;
+    } else if (rol === 'Administrador' && !estadoFiltro) {
+      // El administrador ve todo si no hay filtro seleccionado
+      endpoint += '';
     } else if (estadoFiltro) {
       endpoint += `/por-estado/${estadoFiltro}`;
     }
@@ -165,27 +175,61 @@ export default function SolicitudesViaticos() {
             </tr>
           </thead>
           <tbody>
-            {solicitudes.map((s) => (
-              <tr key={s.id_solicitud}>
-                <td>{s.id_solicitud}</td>
-                {rol !== 'Usuario' && <td>{s.nombre_usuario || 'N/A'}</td>}
-                <td>{s.destino}</td>
-                <td>{s.motivo}</td>
-                <td>{s.estado}</td>
-                {['Coordinador', 'Director'].includes(rol) && (
-                  <td>
-                    <button className="btn-edit" onClick={() => actualizarEstado(s.id_solicitud, rol === 'Coordinador' ? 'AprobadoCoor' : 'AprobadoDir')}>Aprobar</button>
-                    <button className="btn-delete" onClick={() => actualizarEstado(s.id_solicitud, 'Rechazado')}>Rechazar</button>
-                  </td>
-                )}
-                {rol === 'Nómina' && (
-                  <td>
-                    <button className="btn-edit" onClick={() => actualizarEstado(s.id_solicitud, 'Desembolsado')}>Desembolsar</button>
-                  </td>
-                )}
-              </tr>
-            ))}
-          </tbody>
+  {solicitudes.map((s) => (
+    <tr key={s.id_solicitud}>
+      <td>{s.id_solicitud}</td>
+      {rol !== 'Usuario' && <td>{s.nombre_usuario || 'N/A'}</td>}
+      <td>{s.destino}</td>
+      <td>{s.motivo}</td>
+      <td>{s.estado}</td>
+      {mostrarAcciones(rol).length > 0 && (
+        <td>
+          {mostrarAcciones(rol).includes('AprobadoCoor') && (
+            <>
+              <button
+                className="btn-edit"
+                onClick={() => actualizarEstado(s.id_solicitud, 'AprobadoCoor')}
+              >
+                Aprobar
+              </button>
+              <button
+                className="btn-delete"
+                onClick={() => actualizarEstado(s.id_solicitud, 'Rechazado')}
+              >
+                Rechazar
+              </button>
+            </>
+          )}
+          {mostrarAcciones(rol).includes('AprobadoDir') && (
+            <>
+              <button
+                className="btn-edit"
+                onClick={() => actualizarEstado(s.id_solicitud, 'AprobadoDir')}
+              >
+                Aprobar
+              </button>
+              <button
+                className="btn-delete"
+                onClick={() => actualizarEstado(s.id_solicitud, 'Rechazado')}
+              >
+                Rechazar
+              </button>
+            </>
+          )}
+          {mostrarAcciones(rol).includes('Desembolsado') && (
+            <button
+              className="btn-edit"
+              onClick={() => actualizarEstado(s.id_solicitud, 'Desembolsado')}
+            >
+              Desembolsar
+            </button>
+          )}
+        </td>
+      )}
+    </tr>
+  ))}
+</tbody>
+
         </table>
 
         <button onClick={cerrarSesion} className="btn-back">🔒 Cerrar sesión</button>
