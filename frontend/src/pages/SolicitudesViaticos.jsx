@@ -1,10 +1,22 @@
-import React, { useState, useEffect } from 'react';
+
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../styles.css';
 import { toast } from 'react-toastify';
 
+const columnasPorRol = {
+  Usuario: ['ID', 'Destino', 'Motivo', 'Estado'],
+  Coordinador: ['ID', 'Usuario', 'Destino', 'Motivo', 'Estado', 'Acciones'],
+  Director: ['ID', 'Usuario', 'Destino', 'Motivo', 'Estado', 'Acciones'],
+  Nómina: ['ID', 'Usuario', 'Destino', 'Motivo', 'Estado', 'Acciones'],
+  Administrador: ['ID', 'Usuario', 'Destino', 'Motivo', 'Estado'],
+};
+
 export default function SolicitudesViaticos() {
   const navigate = useNavigate();
+  const rol = localStorage.getItem('rol');
+  const id_usuario = localStorage.getItem('id_usuario');
+
   const [formData, setFormData] = useState({
     destino: '',
     motivo: '',
@@ -13,15 +25,33 @@ export default function SolicitudesViaticos() {
     fecha_fin: '',
     id_ciudad: '',
   });
+
   const [solicitudes, setSolicitudes] = useState([]);
-  const rol = localStorage.getItem('rol');
+  const [estadoFiltro, setEstadoFiltro] = useState('');
 
   useEffect(() => {
     if (!rol) {
       toast.error('Acceso denegado');
       navigate('/');
+    } else {
+      cargarSolicitudes();
     }
-  }, [navigate, rol]);
+  }, [estadoFiltro]);
+
+  const cargarSolicitudes = () => {
+    let endpoint = 'http://localhost:5001/api/solicitudes';
+
+    if (rol === 'Usuario') {
+      endpoint += `/usuario/${id_usuario}`;
+    } else if (estadoFiltro) {
+      endpoint += `/por-estado/${estadoFiltro}`;
+    }
+
+    fetch(endpoint)
+      .then(res => res.json())
+      .then(data => setSolicitudes(data))
+      .catch(() => toast.error('Error cargando solicitudes'));
+  };
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -35,16 +65,10 @@ export default function SolicitudesViaticos() {
     fetch("http://localhost:5001/api/solicitudes", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        ...formData,
-        id_usuario: localStorage.getItem('id_usuario'),
-      }),
+      body: JSON.stringify({ ...formData, id_usuario }),
     })
-      .then(async (res) => {
-        const data = await res.json();
-        if (!res.ok) {
-          throw new Error(data.mensaje || 'Error al registrar la solicitud');
-        }
+      .then(res => res.json())
+      .then(data => {
         toast.success(data.mensaje);
         setFormData({
           destino: '',
@@ -54,29 +78,23 @@ export default function SolicitudesViaticos() {
           fecha_fin: '',
           id_ciudad: '',
         });
+        cargarSolicitudes();
       })
-      .catch((error) => {
-        console.error("Error al enviar la solicitud:", error);
-        toast.error(error.message);
-      });
+      .catch(() => toast.error("Error al enviar la solicitud"));
   };
 
-  const cargarSolicitudes = () => {
-    fetch("http://localhost:5001/api/solicitudes/pendientes", {
-      method: "GET",
+  const actualizarEstado = (id, nuevoEstado) => {
+    fetch(`http://localhost:5001/api/solicitudes/${id}`, {
+      method: "PUT",
       headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ estado: nuevoEstado })
     })
-      .then(async (res) => {
-        const data = await res.json();
-        if (!res.ok) {
-          throw new Error(data.mensaje || 'Error al cargar las solicitudes');
-        }
-        setSolicitudes(data);
+      .then(res => res.json())
+      .then(data => {
+        toast.success(data.mensaje);
+        cargarSolicitudes();
       })
-      .catch((error) => {
-        console.error("Error al cargar las solicitudes:", error);
-        toast.error(error.message);
-      });
+      .catch(() => toast.error("Error actualizando estado"));
   };
 
   const cerrarSesion = () => {
@@ -88,105 +106,90 @@ export default function SolicitudesViaticos() {
   return (
     <div className="background">
       <div className="container">
-        <img src="/logo.png" className="logo" alt="Logo" />
-        <h2>Gestión de Solicitudes de Viáticos</h2>
+        <img src="/logo.png" alt="Logo" className="logo" />
+        <h2>Solicitudes de Viáticos</h2>
+
+        <div style={{ marginBottom: '15px' }}>
+  <button onClick={() => navigate('/inicio')} className="btn-back">⬅️ Volver atrás</button>
+</div>
+
 
         {rol === 'Usuario' && (
           <form className="formulario-solicitud" onSubmit={handleSubmit}>
             <div className="form-group">
               <label>Destino:</label>
-              <input
-                type="text"
-                value={formData.destino}
-                onChange={(e) => setFormData({ ...formData, destino: e.target.value })}
-                required
-              />
+              <input type="text" value={formData.destino} onChange={e => setFormData({ ...formData, destino: e.target.value })} required />
             </div>
-
             <div className="form-group">
               <label>Motivo:</label>
-              <input
-                type="text"
-                value={formData.motivo}
-                onChange={(e) => setFormData({ ...formData, motivo: e.target.value })}
-                required
-              />
+              <input type="text" value={formData.motivo} onChange={e => setFormData({ ...formData, motivo: e.target.value })} required />
             </div>
-
             <div className="form-group">
               <label>Observaciones:</label>
-              <textarea
-                value={formData.observaciones}
-                onChange={(e) => setFormData({ ...formData, observaciones: e.target.value })}
-              ></textarea>
+              <textarea value={formData.observaciones} onChange={e => setFormData({ ...formData, observaciones: e.target.value })} />
             </div>
-
             <div className="form-group">
               <label>Fecha Inicio:</label>
-              <input
-                type="date"
-                value={formData.fecha_inicio}
-                onChange={(e) => setFormData({ ...formData, fecha_inicio: e.target.value })}
-                required
-              />
+              <input type="date" value={formData.fecha_inicio} onChange={e => setFormData({ ...formData, fecha_inicio: e.target.value })} required />
             </div>
-
             <div className="form-group">
               <label>Fecha Fin:</label>
-              <input
-                type="date"
-                value={formData.fecha_fin}
-                onChange={(e) => setFormData({ ...formData, fecha_fin: e.target.value })}
-                required
-              />
+              <input type="date" value={formData.fecha_fin} onChange={e => setFormData({ ...formData, fecha_fin: e.target.value })} required />
             </div>
-
             <div className="form-group">
-              <label>Ciudad (ID):</label>
-              <input
-                type="number"
-                value={formData.id_ciudad}
-                onChange={(e) => setFormData({ ...formData, id_ciudad: e.target.value })}
-                placeholder="Ej: 101 (Bogotá)"
-              />
+              <label>ID Ciudad:</label>
+              <input type="number" value={formData.id_ciudad} onChange={e => setFormData({ ...formData, id_ciudad: e.target.value })} />
             </div>
-
             <button type="submit" className="btn">Enviar Solicitud</button>
           </form>
         )}
 
-        {rol === 'Coordinador' && (
-          <div>
-            <button onClick={cargarSolicitudes} className="btn">🔄 Cargar Solicitudes Pendientes</button>
-            <table className="table">
-              <thead>
-                <tr>
-                  <th>ID</th>
-                  <th>Destino</th>
-                  <th>Motivo</th>
-                  <th>Estado</th>
-                  <th>Acciones</th>
-                </tr>
-              </thead>
-              <tbody>
-                {solicitudes.map((solicitud) => (
-                  <tr key={solicitud.id_solicitud}>
-                    <td>{solicitud.id_solicitud}</td>
-                    <td>{solicitud.destino}</td>
-                    <td>{solicitud.motivo}</td>
-                    <td>{solicitud.estado}</td>
-                    <td>
-                      <button className="btn">Aprobar</button>
-                      <button className="btn">Rechazar</button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+        {rol !== 'Usuario' && (
+          <div className="form-group" style={{ maxWidth: '300px', margin: '20px auto' }}>
+            <label>Filtrar por estado:</label>
+            <select className="btn" value={estadoFiltro} onChange={(e) => setEstadoFiltro(e.target.value)}>
+              <option value="">-- Todos --</option>
+              <option value="Pendiente">Pendiente</option>
+              <option value="AprobadoCoor">Aprobado por Coordinador</option>
+              <option value="AprobadoDir">Aprobado por Director</option>
+              <option value="Rechazado">Rechazado</option>
+              <option value="Desembolsado">Desembolsado</option>
+            </select>
           </div>
         )}
 
+        <table className="user-table">
+          <thead>
+            <tr>
+              {columnasPorRol[rol]?.map((col, idx) => <th key={idx}>{col}</th>)}
+            </tr>
+          </thead>
+          <tbody>
+            {solicitudes.map((s) => (
+              <tr key={s.id_solicitud}>
+                <td>{s.id_solicitud}</td>
+                {rol !== 'Usuario' && <td>{s.nombre_usuario || 'N/A'}</td>}
+                <td>{s.destino}</td>
+                <td>{s.motivo}</td>
+                <td>{s.estado}</td>
+                {['Coordinador', 'Director'].includes(rol) && (
+                  <td>
+                    <button className="btn-edit" onClick={() => actualizarEstado(s.id_solicitud, rol === 'Coordinador' ? 'AprobadoCoor' : 'AprobadoDir')}>Aprobar</button>
+                    <button className="btn-delete" onClick={() => actualizarEstado(s.id_solicitud, 'Rechazado')}>Rechazar</button>
+                  </td>
+                )}
+                {rol === 'Nómina' && (
+                  <td>
+                    <button className="btn-edit" onClick={() => actualizarEstado(s.id_solicitud, 'Desembolsado')}>Desembolsar</button>
+                  </td>
+                )}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+
         <button onClick={cerrarSesion} className="btn-back">🔒 Cerrar sesión</button>
+        <p className="link-login">Rol: <strong>{rol}</strong></p>
       </div>
     </div>
   );

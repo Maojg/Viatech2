@@ -52,14 +52,14 @@ export default function Login() {
   };
 
   return (
-    <div className="background">
-      <div className="container">
-        <img src="/logo.png" alt="Logo" className="logo" />
-        <h1><span style={{ color: '#007bff' }}>ViaTech</span></h1>
-        <p>Gestión Inteligente de Viáticos</p>
-        <h2>Inicio de Sesión</h2>
+    <div className="container">
+  <div className="login-form-container">
+    <img src="/logo.png" alt="Logo" className="logo" />
+    <h1><span style={{ color: '#007bff' }}>ViaTech</span></h1>
+    <p>Gestión Inteligente de Viáticos</p>
+    <h2>Inicio de Sesión</h2>
 
-        <form onSubmit={enviarLogin}>
+    <form onSubmit={enviarLogin}>
           <div className="form-group">
             <label>Correo:</label>
             <input
@@ -83,11 +83,12 @@ export default function Login() {
           </button>
         </form>
 
-        <a className="forgot-password" href="/recuperar">¿Olvidaste tu contraseña?</a>
-        <div className="link-login">
-          ¿No tienes cuenta? <Link to="/registro">¡Regístrate aquí!</Link>
-        </div>
-      </div>
+        
+    <a className="forgot-password" href="/recuperar">¿Olvidaste tu contraseña?</a>
+    <div className="link-login">
+      ¿No tienes cuenta? <Link to="/registro">¡Regístrate aquí!</Link>
     </div>
+  </div>
+</div>
   );
 }

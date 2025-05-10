@@ -357,8 +357,10 @@ def actualizar_estado_solicitud(id_solicitud):
     data = request.get_json()
     nuevo_estado = data.get('estado')
 
-    if nuevo_estado not in ['Aprobado', 'Rechazado']:
+    ESTADOS_VALIDOS = ['Pendiente', 'AprobadoCoor', 'AprobadoDir', 'Desembolsado', 'Rechazado']
+    if nuevo_estado not in ESTADOS_VALIDOS:
         return jsonify({"mensaje": "Estado inválido"}), 400
+
 
     try:
         cur = mysql.connection.cursor()
@@ -373,6 +375,75 @@ def actualizar_estado_solicitud(id_solicitud):
     except Exception as e:
         print("Error actualizando estado:", e)
         return jsonify({"mensaje": f"Error interno: {str(e)}"}), 500
+    # app.py (añade esto justo antes del if __name__ == '__main__')
+
+@app.route('/api/solicitudes/usuario/<int:id_usuario>', methods=['GET'])
+def obtener_solicitudes_por_usuario(id_usuario):
+    """
+    Devuelve todas las solicitudes de viáticos
+    realizadas por el usuario con id_usuario.
+    """
+    try:
+        cur = mysql.connection.cursor()
+        cur.execute("""
+            SELECT s.id_solicitud, s.destino, s.motivo, s.estado,
+                   DATE_FORMAT(s.fecha_inicio, '%%Y-%%m-%%d') as fecha_inicio,
+                   DATE_FORMAT(s.fecha_fin,    '%%Y-%%m-%%d') as fecha_fin,
+                   c.nombre_ciudad
+            FROM solicitudes_viaticos s
+            LEFT JOIN ciudades c ON s.id_ciudad = c.id_ciudad
+            WHERE s.id_usuario = %s
+            ORDER BY s.fecha_solicitud DESC
+        """, (id_usuario,))
+        rows = cur.fetchall()
+        cur.close()
+
+        resultado = [{
+            "id_solicitud": r[0],
+            "destino":      r[1],
+            "motivo":       r[2],
+            "estado":       r[3],
+            "fecha_inicio": r[4],
+            "fecha_fin":    r[5],
+            "ciudad":       r[6]
+        } for r in rows]
+
+        return jsonify(resultado)
+    except Exception as e:
+        print("Error obteniendo solicitudes de usuario:", e)
+        return jsonify({"mensaje": f"Error interno: {str(e)}"}), 500
+    
+@app.route('/api/solicitudes/por-estado/<estado>', methods=['GET'])
+def obtener_solicitudes_por_estado(estado):
+    try:
+        cur = mysql.connection.cursor()
+        cur.execute("""
+            SELECT s.id_solicitud, u.nombre, s.destino, s.motivo, s.fecha_inicio, s.fecha_fin, s.estado
+            FROM solicitudes_viaticos s
+            JOIN usuarios u ON s.id_usuario = u.id_usuario
+            WHERE s.estado = %s
+            ORDER BY s.fecha_solicitud DESC
+        """, (estado,))
+        solicitudes = cur.fetchall()
+        cur.close()
+
+        resultado = [
+            {
+                "id_solicitud": s[0],
+                "nombre_usuario": s[1],
+                "destino": s[2],
+                "motivo": s[3],
+                "fecha_inicio": s[4].strftime("%Y-%m-%d"),
+                "fecha_fin": s[5].strftime("%Y-%m-%d"),
+                "estado": s[6]
+            } for s in solicitudes
+        ]
+        return jsonify(resultado)
+    except Exception as e:
+        print("Error en solicitudes por estado:", e)
+        return jsonify({"mensaje": f"Error interno: {str(e)}"}), 500
+
+
 
 
     

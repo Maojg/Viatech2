@@ -1,23 +1,19 @@
 import React, { useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import '../styles.css';
-import '../App.css';
-import { Link, useNavigate } from 'react-router-dom'; // <-- Importamos useNavigate
 import { toast } from 'react-toastify';
 
 export default function Administrador() {
   const navigate = useNavigate();
 
-   // Mostrar bienvenida una sola vez cuando se carga el componente
-   useEffect(() => {
+  useEffect(() => {
     toast.info('Bienvenido al panel de administración');
   }, []);
 
-  // Cierra sesión y limpia el rol
   const cerrarSesion = () => {
-    localStorage.removeItem('rol');
+    localStorage.clear();
     navigate('/');
   };
-  
 
   return (
     <div className="background">
@@ -27,25 +23,21 @@ export default function Administrador() {
         <p>Gestión Inteligente de Viáticos</p>
         <h2>Panel del Administrador</h2>
 
-        <nav className="button-group" style={{ flexDirection: 'column' }}>
-          <Link to="/usuarios" className="btn">Usuarios</Link>
-          <Link to="/coordinadores" className="btn">Coordinadores</Link>
-          <Link to="/directores" className="btn">Directores</Link>
-          <Link to="/informes" className="btn">Informes</Link>
-          <Link to="/solicitudes-rol" className="btn">Solicitudes de Rol</Link>
-          <Link to="/historial-solicitudes" className="btn">📜 Ver Historial de Solicitudes</Link>
+        <div className="button-group" style={{ flexDirection: 'column' }}>
+          <button className="btn" onClick={() => navigate('/usuarios')}>Usuarios</button>
+          <button className="btn" onClick={() => navigate('/solicitudes')}>Revisar Solicitudes</button>
+          <button className="btn" onClick={() => navigate('/solicitudes-rol')}>Solicitudes de Rol</button>
+          <button className="btn" onClick={() => navigate('/historial-solicitudes')}>📜 Historial de Solicitudes</button>
+          <button className="btn" onClick={() => navigate('/informes')}>Informes</button>
+        </div>
 
-        </nav>
+        <button onClick={() => navigate('/inicio')} className="btn-back" style={{ marginTop: '15px' }}>
+          ⬅️ Volver al Inicio
+        </button>
+        <button onClick={cerrarSesion} className="btn-back">🔒 Cerrar sesión</button>
 
-        {/* Botón atrás */}
-        <button onClick={() => navigate(-1)} className="btn-back" style={{ marginTop: '15px' }}>
-          ⬅️ Volver atrás
-        </button>
-        <button onClick={cerrarSesion} className="btn-back">
-          🔒 Cerrar sesión
-        </button>
         <p className="link-login"><strong>Bienvenido Administrador</strong></p>
-        <p className="link-login">Desde aquí puedes gestionar los usuarios del sistema.</p>
+        <p className="link-login">Desde aquí puedes gestionar los usuarios y las solicitudes.</p>
 
         <footer style={{ marginTop: '20px', fontSize: '12px', color: '#666' }}>
           © 2025 MSOLUCIONES - Todos los derechos reservados.

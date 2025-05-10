@@ -6,30 +6,30 @@ body {
     background-color: #f4f4f4;
     margin: 0;
     padding: 0;
-  }
-  
-  h1 {
+}
+
+h1 {
     margin: 10px 0;
     color: #333;
-  }
-  
-  p {
+}
+
+p {
     color: #666;
     margin-bottom: 20px;
-  }
-  
-  /* ---------------------------------
-     LAYOUT Y CONTENEDORES
-  ----------------------------------*/
-  .background {
+}
+
+/* ---------------------------------
+   LAYOUT Y CONTENEDORES
+----------------------------------*/
+.background {
     background-color: #f0f2f5;
-    height: 100vh;
+    min-height: 100vh;
     display: flex;
     align-items: center;
     justify-content: center;
-  }
-  
-  .container {
+}
+
+.container {
     background-color: white;
     padding: 30px;
     border-radius: 12px;
@@ -39,49 +39,49 @@ body {
     max-width: 1100px;
     margin: 30px auto;
     overflow-x: auto;
-  }
-  
-  .logo {
-    width: 150px;
-    height: auto;
-    margin-bottom: 20px;
-  }
-  
-  /* ---------------------------------
-     FORMULARIOS
-  ----------------------------------*/
-  form {
+    position: relative;
+    z-index: 1;
+}
+
+/* ---------------------------------
+   FORMULARIOS
+----------------------------------*/
+form {
     margin-top: 20px;
-  }
-  
-  .form-group {
+}
+
+.form-group {
     margin-bottom: 15px;
     text-align: left;
-  }
-  
-  label {
+}
+
+label {
     display: block;
     margin-bottom: 5px;
     font-weight: bold;
     color: #333;
-  }
-  
-  input[type="text"],
-  input[type="email"],
-  input[type="password"] {
+}
+
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="date"],
+input[type="number"],
+textarea {
     width: 100%;
     padding: 10px;
     margin: 5px 0 10px;
     border: 1px solid #ccc;
     border-radius: 4px;
     box-sizing: border-box;
-  }
-  
-  /* ---------------------------------
-     BOTONES GENERALES
-  ----------------------------------*/
-  button.btn,
-  a.btn {
+    font-size: 16px;
+}
+
+/* ---------------------------------
+   BOTONES GENERALES
+----------------------------------*/
+button.btn,
+a.btn {
     background-color: #0056b3;
     color: #fff;
     padding: 10px 15px;
@@ -93,165 +93,282 @@ body {
     max-width: 150px;
     text-decoration: none;
     display: inline-block;
-  }
-  
-  button.btn:hover,
-  a.btn:hover {
+    z-index: 10;
+    position: relative;
+}
+
+button.btn:hover,
+a.btn:hover {
     background-color: #003d80;
-  }
-  
-  /* Botones específicos */
-  .btn-back {
+}
+
+/* Botones específicos */
+.btn-back {
     margin-top: 20px;
     background-color: #6c757d;
-  }
-  
-  .btn-back:hover {
+}
+
+.btn-back:hover {
     background-color: #5a6268;
-  }
-  
-  .btn-edit {
+}
+
+.btn-edit {
     background-color: #28a745;
-  }
-  
-  .btn-edit:hover {
+}
+
+.btn-edit:hover {
     background-color: #218838;
-  }
-  
-  .btn-delete {
+}
+
+.btn-delete {
     background-color: #dc3545;
-  }
-  
-  .btn-delete:hover {
+}
+
+.btn-delete:hover {
     background-color: #c82333;
-  }
-  
-  /* ---------------------------------
-     LINKS Y NAVEGACIÓN
-  ----------------------------------*/
-  .forgot-password {
+}
+
+/* ---------------------------------
+   LINKS Y NAVEGACIÓN
+----------------------------------*/
+.forgot-password {
     display: block;
     margin-top: 15px;
     color: #0056b3;
     text-decoration: none;
     text-align: center;
-  }
-  
-  .forgot-password:hover {
+}
+
+.forgot-password:hover {
     color: #003d80;
     text-decoration: underline;
-  }
-  
-  .link-login {
+}
+
+.link-login {
     text-align: center;
     margin-top: 15px;
     font-size: 14px;
     color: #333;
-  }
-  
-  .link-login a {
+}
+
+.link-login a {
     color: #0056b3;
     text-decoration: none;
     font-weight: bold;
-  }
-  
-  .link-login a:hover {
+}
+
+.link-login a:hover {
     color: #003d80;
     text-decoration: underline;
-  }
-  
-  /* ---------------------------------
-     TABLAS Y CONTENIDO
-  ----------------------------------*/
-  .table-container {
-    width: 100%;
-    overflow-x: auto;
-    margin-top: 20px;
-    border-radius: 5px;
-  }
-  
-  .user-table {
+}
+
+/* ---------------------------------
+   TABLAS Y CONTENIDO
+----------------------------------*/
+.table-container {
+  width: 100%;
+  overflow-x: auto;
+  margin-top: 20px;
+  border-radius: 8px;
+  position: relative;
+  z-index: 5;
+}
+
+.user-table {
     width: 100%;
     border-collapse: collapse;
     min-width: 700px;
-  }
-  
-  .user-table th,
-  .user-table td {
+}
+
+.user-table th,
+.user-table td {
     padding: 10px;
     border: 1px solid #ccc;
     text-align: center;
     white-space: nowrap;
-  }
-  
-  /* ---------------------------------
-     GRUPOS DE BOTONES (NAVEGACIÓN)
-  ----------------------------------*/
-  .button-group {
+    position: relative;
+    z-index: 2;
+}
+
+.user-table td button {
+    position: relative;
+    z-index: 10;
+    pointer-events: auto;
+}
+
+.user-table td,
+.user-table td * {
+  pointer-events: auto !important;
+}
+
+/* ---------------------------------
+   GRUPOS DE BOTONES (NAVEGACIÓN)
+----------------------------------*/
+.button-group {
     display: flex;
     justify-content: space-between;
     gap: 10px;
-  }
-  
-  /* ---------------------------------
-     RESPONSIVE DESIGN
-  ----------------------------------*/
-  @media (max-width: 768px) {
+}
+
+/* ---------------------------------
+   RESPONSIVE DESIGN
+----------------------------------*/
+@media (max-width: 768px) {
     .user-table {
-      font-size: 12px;
-      overflow-x: auto;
-      display: block;
+        font-size: 12px;
+        overflow-x: auto;
+        display: block;
+        min-width: 600px;
     }
-  
+
     .container {
-      padding: 20px;
+        padding: 20px;
     }
-  
+
     .button-group {
-      flex-direction: column;
-      align-items: center;
+        flex-direction: column;
+        align-items: center;
     }
-  
+
     button.btn,
     a.btn {
-      width: 100%;
-      max-width: none;
+        width: 100%;
+        max-width: none;
     }
-  }
-  
-  .formulario-solicitud {
-    max-width: 600px;
-    margin: 30px auto;
-    padding: 30px;
-    background-color: #ffffff;
-    border-radius: 12px;
-    box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
-    text-align: left;
-  }
-  
-  .formulario-solicitud h2 {
+}
+
+/* ---------------------------------
+   FORMULARIO DE SOLICITUD
+----------------------------------*/
+.formulario-solicitud {
+  max-width: 600px;
+  width: 100%;
+  margin: 20px auto;
+  padding: 30px;
+  background-color: #fff;
+  border-radius: 12px;
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+}
+
+.formulario-solicitud h2 {
     text-align: center;
     color: #007bff;
     margin-bottom: 25px;
+}
+
+@media (max-width: 768px) {
+  .formulario-solicitud {
+    padding: 15px;
   }
-  
-  .formulario-solicitud textarea {
+}
+
+/* Corregir posibles overlays por Toastify o contenedores */
+.Toastify {
+  z-index: 9999 !important;
+  pointer-events: none !important;
+}
+
+/* ---------------------------------
+   CORRECCIONES PARA .user-table
+----------------------------------*/
+.user-table td button {
+  position: relative;
+  z-index: 10;
+  pointer-events: auto;
+}
+
+td {
+  pointer-events: auto !important;
+}
+
+.user-table td {
+  background-color: white; /* Para evitar capas transparentes o bloqueos visuales */
+}
+
+/* ---------------------------------
+   BOTONES ADAPTABLES
+----------------------------------*/
+.btn, .btn-edit, .btn-delete, .btn-back {
+  font-size: 14px;
+  padding: 8px 12px;
+  margin: 5px;
+}
+
+@media (max-width: 768px) {
+  .btn, .btn-back {
     width: 100%;
-    min-height: 60px;
-    padding: 10px;
-    font-size: 16px;
-    border-radius: 4px;
-    border: 1px solid #ccc;
-    box-sizing: border-box;
+    display: block;
   }
-  
-  .formulario-solicitud input[type="date"],
-  .formulario-solicitud input[type="number"] {
-    width: 100%;
-    padding: 10px;
-    margin-bottom: 15px;
-    border-radius: 4px;
-    border: 1px solid #ccc;
-    font-size: 16px;
+}
+
+/* ---------------------------------
+   TABLA ADAPTATIVA
+----------------------------------*/
+.table-container {
+  width: 100%;
+  overflow-x: auto;
+  margin-top: 20px;
+  border-radius: 8px;
+}
+
+.user-table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 700px;
+}
+
+@media (max-width: 768px) {
+  .user-table {
+    font-size: 12px;
+    min-width: 600px;
   }
-  
+}
+
+/* ---------------------------------
+   LOGO RESPONSIVO
+----------------------------------*/
+.logo {
+  max-width: 150px; /* Tamaño máximo del logo */
+  width: 100%; /* Se adapta al contenedor */
+  height: auto; /* Mantiene la proporción */
+  margin: 0 auto; /* Centra el logo */
+  display: block;
+}
+
+@media (max-width: 768px) {
+  .logo {
+    max-width: 100px; /* Reduce el tamaño en pantallas pequeñas */
+  }
+}
+
+/* ---------------------------------
+   FORMULARIO DE INICIO DE SESIÓN
+----------------------------------*/
+.login-form-container {
+  max-width: 400px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 20px 30px;
+  background-color: #fff;
+  border-radius: 12px;
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+}
+
+.login-form-container h2 {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.login-form-container input {
+  width: 100%;
+  padding: 10px;
+  font-size: 16px;
+  margin-bottom: 15px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+}
+
+.login-form-container button.btn {
+  width: 100%;
+  font-size: 16px;
+}
