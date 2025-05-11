@@ -1,15 +1,13 @@
 // src/pages/Register.jsx
 import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom'; // 👈 Agregado useNavigate
+import { Link, useNavigate } from 'react-router-dom';
 import '../styles.css';
 import { toast } from 'react-toastify';
 
-
-
 export default function Register() {
-  const navigate = useNavigate(); // 👈 Hook para redirigir
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
-    nombre: '', apellido: '', email: '', telefono: '', password: '', confirmar: '', rol_solicitado: ""
+    nombre: '', apellido: '', email: '', telefono: '', password: '', confirmar: '', rol_solicitado: ''
   });
 
   const enviarRegistro = (e) => {
@@ -42,14 +40,14 @@ export default function Register() {
       })
       .then(data => {
         alert(data.mensaje);
-        navigate('/'); // 👈 Redirigir al login
+        navigate('/');
       })
       .catch(error => toast.error(error.message));
   };
 
   return (
     <div className="background">
-      <div className="container">
+      <div className="login-form-container">
         <img src="/logo.png" alt="Logo" className="logo" />
         <h1><span style={{ color: '#007bff' }}>ViaTech</span></h1>
         <p>Registro de Usuario</p>
@@ -86,7 +84,7 @@ export default function Register() {
               placeholder="Administrador, Usuario, Coordinador, Director, Nómina"
               onChange={e => setFormData({ ...formData, rol_solicitado: e.target.value })}
             />
-          </div>  
+          </div>
           <button type="submit" className="btn">Registrarse</button>
         </form>
 
