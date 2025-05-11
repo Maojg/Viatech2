@@ -8,14 +8,19 @@ body {
     padding: 0;
 }
 
-h1 {
-    margin: 10px 0;
-    color: #333;
+h1, h2 {
+  font-family: Arial, sans-serif;
+  color: #333;
+  margin-bottom: 15px;
+  text-align: center;
 }
 
 p {
-    color: #666;
-    margin-bottom: 20px;
+  font-family: Arial, sans-serif;
+  color: #666;
+  margin-bottom: 20px;
+  line-height: 1.5;
+  text-align: center;
 }
 
 /* ---------------------------------
@@ -56,10 +61,11 @@ form {
 }
 
 label {
-    display: block;
-    margin-bottom: 5px;
-    font-weight: bold;
-    color: #333;
+  font-family: Arial, sans-serif;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 5px;
+  display: block;
 }
 
 input[type="text"],
@@ -372,4 +378,24 @@ td {
 .login-form-container button.btn {
   width: 100%;
   font-size: 16px;
+}
+
+/* ---------------------------------
+   ESTILOS CONSISTENTES
+----------------------------------*/
+button {
+  font-family: Arial, sans-serif;
+  font-size: 14px;
+  color: #fff;
+  background-color: #0056b3;
+  padding: 10px 15px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  text-align: center;
+  transition: background-color 0.3s ease;
+}
+
+button:hover {
+  background-color: #003d80;
 }
