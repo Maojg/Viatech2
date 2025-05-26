@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../styles.css';
 import { toast } from 'react-toastify';
+import API_BASE_URL from '../config/apiConfig.js';
 
 export default function Usuarios() {
   const navigate = useNavigate();
@@ -26,11 +27,16 @@ export default function Usuarios() {
 
   const cerrarSesion = () => {
     localStorage.removeItem('rol');
+    localStorage.removeItem('id_usuario'); // Add this
+    localStorage.removeItem('token');    // Add this
     navigate('/');
   };
 
   const cargarUsuarios = () => {
-    fetch('http://localhost:5001/api/usuarios')
+    const token = localStorage.getItem('token');
+    fetch(`${API_BASE_URL}/usuarios`, {
+      headers: { 'Authorization': `Bearer ${token}` }
+    })
       .then(res => res.json())
       .then(data => setUsuarios(data))
       .catch(err => {
@@ -58,9 +64,13 @@ export default function Usuarios() {
       return;
     }
 
-    fetch('http://localhost:5001/api/register', {
+    const token = localStorage.getItem('token');
+    fetch(`${API_BASE_URL}/register`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
       body: JSON.stringify({
         ...formData,
         id_rol: parseInt(formData.id_rol) // Forzar conversión a entero
@@ -77,9 +87,11 @@ export default function Usuarios() {
   };
 
   const eliminarUsuario = (id) => {
+    const token = localStorage.getItem('token');
     if (window.confirm('¿Seguro que deseas eliminar este usuario?')) {
-      fetch(`http://localhost:5001/api/usuarios/${id}`, {
-        method: 'DELETE'
+      fetch(`${API_BASE_URL}/usuarios/${id}`, {
+        method: 'DELETE',
+        headers: { 'Authorization': `Bearer ${token}` }
       })
       .then(res => res.json())
       .then(data => {
@@ -128,9 +140,13 @@ export default function Usuarios() {
 
     console.log("ID del usuario editando:", usuarioEditando);
 
-    fetch(`http://localhost:5001/api/usuarios/${usuarioEditando}`, {
+    const token = localStorage.getItem('token');
+    fetch(`${API_BASE_URL}/usuarios/${usuarioEditando}`, {
       method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
       body: JSON.stringify({
         nombre: formData.nombre,
         apellido: formData.apellido,

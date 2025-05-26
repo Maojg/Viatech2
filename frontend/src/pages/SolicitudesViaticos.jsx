@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../styles.css';
 import { toast } from 'react-toastify';
+import API_BASE_URL from '../config/apiConfig.js';
 
 const columnasPorRol = {
   Usuario: ['ID', 'Destino', 'Motivo', 'Estado'],
@@ -46,7 +47,8 @@ const mostrarAcciones = (rol) => {
   }, [estadoFiltro]);
 
   const cargarSolicitudes = () => {
-    let endpoint = 'http://localhost:5001/api/solicitudes';
+    const token = localStorage.getItem('token');
+    let endpoint = `${API_BASE_URL}/solicitudes`;
 
     if (rol === 'Usuario') {
       endpoint += `/usuario/${id_usuario}`;
@@ -57,7 +59,11 @@ const mostrarAcciones = (rol) => {
       endpoint += `/por-estado/${estadoFiltro}`;
     }
 
-    fetch(endpoint)
+    fetch(endpoint, {
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    })
       .then(res => res.json())
       .then(data => setSolicitudes(data))
       .catch(() => toast.error('Error cargando solicitudes'));
@@ -72,9 +78,13 @@ const mostrarAcciones = (rol) => {
       return;
     }
 
-    fetch("http://localhost:5001/api/solicitudes", {
+    const token = localStorage.getItem('token');
+    fetch(`${API_BASE_URL}/solicitudes`, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        'Authorization': `Bearer ${token}`
+      },
       body: JSON.stringify({ ...formData, id_usuario }),
     })
       .then(res => res.json())
@@ -94,9 +104,13 @@ const mostrarAcciones = (rol) => {
   };
 
   const actualizarEstado = (id, nuevoEstado) => {
-    fetch(`http://localhost:5001/api/solicitudes/${id}`, {
+    const token = localStorage.getItem('token');
+    fetch(`${API_BASE_URL}/solicitudes/${id}`, {
       method: "PUT",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        'Authorization': `Bearer ${token}`
+      },
       body: JSON.stringify({ estado: nuevoEstado })
     })
       .then(res => res.json())
@@ -110,6 +124,7 @@ const mostrarAcciones = (rol) => {
   const cerrarSesion = () => {
     localStorage.removeItem('rol');
     localStorage.removeItem('id_usuario');
+    localStorage.removeItem('token'); // Add this line
     navigate('/');
   };
 

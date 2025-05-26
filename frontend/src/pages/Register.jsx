@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import '../styles.css';
 import { toast } from 'react-toastify';
+import API_BASE_URL from '../config/apiConfig.js';
 
 export default function Register() {
   const navigate = useNavigate();
@@ -25,7 +26,7 @@ export default function Register() {
       return;
     }
 
-    fetch('http://localhost:5001/api/register', {
+    fetch(`${API_BASE_URL}/register`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(formData)

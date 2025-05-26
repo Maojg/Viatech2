@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import '../styles.css';
 import { Link } from 'react-router-dom';
 import { toast } from 'react-toastify';
+import API_BASE_URL from '../config/apiConfig.js';
 
 
 export default function Login() {
@@ -22,7 +23,7 @@ export default function Login() {
     setCargando(true);
 
     try {
-      const res = await fetch('http://localhost:5001/api/login', {
+      const res = await fetch(`${API_BASE_URL}/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password }),
@@ -37,6 +38,7 @@ export default function Login() {
       toast.success(data.mensaje);
       localStorage.setItem('rol', data.rol); // Guardar el rol
       localStorage.setItem('id_usuario', data.id_usuario); // Guardar el ID del usuario
+      localStorage.setItem('token', data.token); // Guardar el token
 
       // Redirigir siempre a /inicio si el rol es válido
       if (['Administrador', 'Coordinador', 'Director', 'Usuario', 'Nómina'].includes(data.rol)) {
