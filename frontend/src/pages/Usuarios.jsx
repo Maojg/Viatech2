@@ -56,7 +56,7 @@ export default function Usuarios() {
       return;
     }
 
-    fetch('http://localhost:5001/api/register', {
+    fetch(`${API_URL}/api/register`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -74,17 +74,24 @@ export default function Usuarios() {
       .catch(() => toast.error('Error registrando usuario'));
   };
 
+  const cargarUsuarios = () => {
+    fetch(`${API_URL}/api/usuarios`)
+      .then(res => res.json())
+      .then(data => setUsuarios(data))
+      .catch(() => toast.error('Error al cargar usuarios'));
+  };
+
   const eliminarUsuario = (id) => {
     if (window.confirm('¿Seguro que deseas eliminar este usuario?')) {
-      fetch(`http://localhost:5001/api/usuarios/${id}`, {
+      fetch(`${API_URL}/api/usuarios/${id}`, {
         method: 'DELETE'
       })
-      .then(res => res.json())
-      .then(data => {
-        toast.success(data.mensaje);
-        cargarUsuarios();
-      })
-      .catch(() => toast.error('Error eliminando usuario'));
+        .then(res => res.json())
+        .then(data => {
+          toast.success(data.mensaje);
+          cargarUsuarios();
+        })
+        .catch(() => toast.error('Error eliminando usuario'));
     }
   };
 
@@ -126,7 +133,7 @@ export default function Usuarios() {
 
     console.log("ID del usuario editando:", usuarioEditando);
 
-    fetch(`http://localhost:5001/api/usuarios/${usuarioEditando}`, {
+    fetch(`${API_URL}/api/usuarios/${usuarioEditando}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
