@@ -7,7 +7,12 @@ from dotenv import load_dotenv
 import os
 
 app = Flask(__name__)
-CORS(app, resources={r"/api/*": {"origins": "http://localhost:3000"}}, supports_credentials=True, methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"], allow_headers=["Content-Type"])
+# CORS(app, resources={r"/api/*": {"origins": "http://localhost:3000"}}, supports_credentials=True, methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"], allow_headers=["Content-Type"])
+CORS(app, resources={r"/api/*": {"origins": [
+    "https://viatech2.vercel.app",
+    "https://*.vercel.app"
+]}}, supports_credentials=True)
+
 
 
 # @app.before_request
