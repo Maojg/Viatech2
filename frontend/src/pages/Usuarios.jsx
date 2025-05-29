@@ -2,6 +2,9 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../styles.css';
 import { toast } from 'react-toastify';
+import axios from 'axios';
+
+const API_URL = process.env.REACT_APP_API_URL;
 
 export default function Usuarios() {
   const navigate = useNavigate();
@@ -12,14 +15,19 @@ export default function Usuarios() {
   });
   const [usuarioEditando, setUsuarioEditando] = useState(null); // Nuevo estado: ID del usuario en edición
 
-  // Validar acceso
+  // Validar acceso y cargar usuarios
   useEffect(() => {
     const rol = localStorage.getItem('rol');
     if (!['Administrador', 'Coordinador', 'Director'].includes(rol)) {
       toast.error('Acceso denegado');
       navigate('/');
     } else {
-      cargarUsuarios();
+      axios.get(`${API_URL}/api/usuarios`)
+        .then(res => setUsuarios(res.data))
+        .catch(err => {
+          console.error("Error cargando usuarios:", err);
+          toast.error('Error al cargar usuarios');
+        });
       toast.info('Gestión de usuarios del sistema');
     }
   }, []);
@@ -27,16 +35,6 @@ export default function Usuarios() {
   const cerrarSesion = () => {
     localStorage.removeItem('rol');
     navigate('/');
-  };
-
-  const cargarUsuarios = () => {
-    fetch('http://localhost:5001/api/usuarios')
-      .then(res => res.json())
-      .then(data => setUsuarios(data))
-      .catch(err => {
-        console.error("Error cargando usuarios:", err);
-        toast.error('Error al cargar usuarios');
-      });
   };
 
   const enviarRegistro = (e) => {
