@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import '../styles.css';
 import { Link } from 'react-router-dom';
 import { toast } from 'react-toastify';
+import axios from 'axios';
 
 const API_URL = process.env.REACT_APP_API_URL;
 
@@ -12,7 +13,7 @@ export default function Login() {
   const [cargando, setCargando] = useState(false);
   const navigate = useNavigate();
 
-  const enviarLogin = async (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (!/\S+@\S+\.\S+/.test(email)) {
@@ -23,30 +24,21 @@ export default function Login() {
     setCargando(true);
 
     try {
-      const res = await fetch(`${API_URL}/api/login`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password }),
+      const res = await axios.post(`${API_URL}/api/login`, {
+        email,
+        password
       });
 
-      const data = await res.json();
+      toast.success(res.data.mensaje);
+      localStorage.setItem('rol', res.data.rol);
+      localStorage.setItem('id_usuario', res.data.id_usuario);
 
-      if (!res.ok) {
-        throw new Error(data.mensaje || 'Error en la autenticación');
+      if (['Administrador', 'Coordinador', 'Director', 'Usuario', 'Nómina'].includes(res.data.rol)) {
+        navigate('/inicio');
       }
-
-      toast.success(data.mensaje);
-      localStorage.setItem('rol', data.rol); // Guardar el rol
-      localStorage.setItem('id_usuario', data.id_usuario); // Guardar el ID del usuario
-
-      // Redirigir siempre a /inicio si el rol es válido
-      if (['Administrador', 'Coordinador', 'Director', 'Usuario', 'Nómina'].includes(data.rol)) {
-        navigate('/inicio'); // Redirige al menú central
-      }
-
     } catch (error) {
-      console.error('Error al iniciar sesión:', error);
-      toast.error(error.message);
+      console.error("❌ Error al iniciar sesión:", error);
+      toast.error(error.response?.data?.mensaje || "Error al iniciar sesión");
     } finally {
       setCargando(false);
     }
@@ -60,7 +52,7 @@ export default function Login() {
     <p>Gestión Inteligente de Viáticos</p>
     <h2>Inicio de Sesión</h2>
 
-    <form onSubmit={enviarLogin}>
+    <form onSubmit={handleSubmit}>
           <div className="form-group">
             <label>Correo:</label>
             <input
