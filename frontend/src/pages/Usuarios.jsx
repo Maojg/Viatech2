@@ -122,7 +122,7 @@ export default function Usuarios() {
       return;
     }
 
-    // Log de los datos a actualizar
+    // Log de los datos a actualizar|
     console.log("Datos a actualizar:", {
       nombre: formData.nombre,
       apellido: formData.apellido,
