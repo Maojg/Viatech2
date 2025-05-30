@@ -78,7 +78,10 @@ export default function Usuarios() {
     fetch(`${API_URL}/api/usuarios`)
       .then(res => res.json())
       .then(data => setUsuarios(data))
-      .catch(() => toast.error('Error al cargar usuarios'));
+      .catch(err => {
+      console.error("Error cargando usuarios:", err);
+      toast.error('Error al cargar usuarios');
+    });
   };
 
   const eliminarUsuario = (id) => {
