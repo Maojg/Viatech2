@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../styles.css';
 import { toast } from 'react-toastify';
+import { apiUrl } from '../config/api';
 
 const columnasPorRol = {
   Usuario: ['ID', 'Destino', 'Motivo', 'Estado'],
@@ -46,7 +47,7 @@ const mostrarAcciones = (rol) => {
   }, [estadoFiltro]);
 
   const cargarSolicitudes = () => {
-    let endpoint = 'http://localhost:5001/api/solicitudes';
+    let endpoint = apiUrl('/api/solicitudes');
 
     if (rol === 'Usuario') {
       endpoint += `/usuario/${id_usuario}`;
@@ -72,7 +73,7 @@ const mostrarAcciones = (rol) => {
       return;
     }
 
-    fetch("http://localhost:5001/api/solicitudes", {
+    fetch(apiUrl('/api/solicitudes'), {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ ...formData, id_usuario }),
@@ -94,7 +95,7 @@ const mostrarAcciones = (rol) => {
   };
 
   const actualizarEstado = (id, nuevoEstado) => {
-    fetch(`http://localhost:5001/api/solicitudes/${id}`, {
+    fetch(apiUrl(`/api/solicitudes/${id}`), {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ estado: nuevoEstado })

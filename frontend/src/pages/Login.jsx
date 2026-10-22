@@ -4,8 +4,7 @@ import '../styles.css';
 import { Link } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import axios from 'axios';
-
-const API_URL = process.env.REACT_APP_API_URL;
+import { apiUrl } from '../config/api';
 
 export default function Login() {
   const [email, setEmail] = useState('');
@@ -24,7 +23,7 @@ export default function Login() {
     setCargando(true);
 
     try {
-      const res = await axios.post(`${API_URL}/api/login`, {
+      const res = await axios.post(apiUrl('/api/login'), {
         email,
         password
       });
