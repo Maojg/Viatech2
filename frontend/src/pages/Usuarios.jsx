@@ -3,8 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import '../styles.css';
 import { toast } from 'react-toastify';
 import axios from 'axios';
-
-const API_URL = process.env.REACT_APP_API_URL;
+import { apiUrl } from '../config/api';
 
 export default function Usuarios() {
   const navigate = useNavigate();
@@ -22,7 +21,7 @@ export default function Usuarios() {
       toast.error('Acceso denegado');
       navigate('/');
     } else {
-      axios.get(`${API_URL}/api/usuarios`)
+      axios.get(apiUrl('/api/usuarios'))
         .then(res => setUsuarios(res.data))
         .catch(err => {
           console.error("Error cargando usuarios:", err);
@@ -56,7 +55,7 @@ export default function Usuarios() {
       return;
     }
 
-    fetch(`${API_URL}/api/register`, {
+    fetch(apiUrl('/api/register'), {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -75,7 +74,7 @@ export default function Usuarios() {
   };
 
   const cargarUsuarios = () => {
-    fetch(`${API_URL}/api/usuarios`)
+    fetch(apiUrl('/api/usuarios'))
       .then(res => res.json())
       .then(data => setUsuarios(data))
       .catch(err => {
@@ -86,7 +85,7 @@ export default function Usuarios() {
 
   const eliminarUsuario = (id) => {
     if (window.confirm('¿Seguro que deseas eliminar este usuario?')) {
-      fetch(`${API_URL}/api/usuarios/${id}`, {
+      fetch(apiUrl(`/api/usuarios/${id}`), {
         method: 'DELETE'
       })
         .then(res => res.json())
@@ -136,7 +135,7 @@ export default function Usuarios() {
 
     console.log("ID del usuario editando:", usuarioEditando);
 
-    fetch(`${API_URL}/api/usuarios/${usuarioEditando}`, {
+    fetch(apiUrl(`/api/usuarios/${usuarioEditando}`), {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({

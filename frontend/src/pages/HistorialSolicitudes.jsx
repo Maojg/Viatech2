@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import '../styles.css';
+import { apiUrl } from '../config/api';
 
 export default function HistorialSolicitudes() {
   const navigate = useNavigate();
@@ -19,7 +20,7 @@ export default function HistorialSolicitudes() {
 
   const cargarHistorial = async () => {
     try {
-      const res = await fetch('http://localhost:5001/api/historial-solicitudes');
+      const res = await fetch(apiUrl('/api/historial-solicitudes'));
       const data = await res.json();
       setHistorial(data);
     } catch (error) {

@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
+import { apiUrl } from '../config/api';
 import '../styles.css';
 
 export default function Directores() {
@@ -23,7 +24,7 @@ export default function Directores() {
   const cargarSolicitudes = async () => {
     setLoading(true);
     try {
-      const response = await fetch('http://localhost:5001/api/solicitudes/por-estado/AprobadoCoor');
+      const response = await fetch(apiUrl('/api/solicitudes/por-estado/AprobadoCoor'));
       if (!response.ok) throw new Error(`HTTP ${response.status}`);
       const data = await response.json();
       setSolicitudes(Array.isArray(data) ? data : []);
@@ -40,7 +41,7 @@ export default function Directores() {
     setUpdatingId(id_solicitud);
 
     try {
-      const response = await fetch(`http://localhost:5001/api/solicitudes/${id_solicitud}`, {
+      const response = await fetch(apiUrl(`/api/solicitudes/${id_solicitud}`), {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ estado: nuevoEstado })

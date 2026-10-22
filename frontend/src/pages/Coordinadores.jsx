@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import '../styles.css';
+import { apiUrl } from '../config/api';
 
 export default function Coordinadores() {
   const navigate = useNavigate();
@@ -28,7 +29,7 @@ export default function Coordinadores() {
   const cargarSolicitudes = async () => {
     setLoading(true);
     try {
-      const response = await fetch('http://localhost:5001/api/solicitudes/por-estado/Pendiente');
+      const response = await fetch(apiUrl('/api/solicitudes/por-estado/Pendiente'));
       
       if (!response.ok) {
         throw new Error(`Error HTTP: ${response.status}`);
@@ -50,7 +51,7 @@ export default function Coordinadores() {
     setUpdatingId(id_solicitud);
 
     try {
-      const response = await fetch(`http://localhost:5001/api/solicitudes/${id_solicitud}`, {
+      const response = await fetch(apiUrl(`/api/solicitudes/${id_solicitud}`), {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ estado: nuevoEstado })

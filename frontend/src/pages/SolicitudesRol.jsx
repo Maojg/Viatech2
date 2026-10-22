@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import '../styles.css';
+import { apiUrl } from '../config/api';
 
 export default function SolicitudesRol() {
   const navigate = useNavigate();
@@ -19,7 +20,7 @@ export default function SolicitudesRol() {
 
   const fetchSolicitudes = async () => {
     try {
-      const res = await fetch('http://localhost:5001/api/solicitudes-rol');
+      const res = await fetch(apiUrl('/api/solicitudes-rol'));
       const data = await res.json();
       setSolicitudes(data);
     } catch (error) {
@@ -29,7 +30,7 @@ export default function SolicitudesRol() {
 
   const actualizarSolicitud = async (id_solicitud, estado, nuevoRol = '') => {
     try {
-      const res = await fetch(`http://localhost:5001/api/solicitudes-rol/${id_solicitud}`, {
+      const res = await fetch(apiUrl(`/api/solicitudes-rol/${id_solicitud}`), {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ estado, nuevo_rol: nuevoRol }),

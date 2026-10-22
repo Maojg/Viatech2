@@ -11,6 +11,7 @@ import HistorialSolicitudes from './pages/HistorialSolicitudes';
 import Inicio from './pages/Inicio';
 import SolicitudesViaticos from './pages/SolicitudesViaticos';
 import Nomina from './pages/Nomina';
+import Informes from './pages/Informes';
 
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -44,6 +45,7 @@ function App() {
         } />
 
         <Route path="/nomina" element={tieneAcceso(['Nómina']) ? <Nomina /> : <Navigate to="/" />} />
+        <Route path="/informes" element={tieneAcceso(['Administrador', 'Usuario', 'Coordinador', 'Director', 'Nómina']) ? <Informes /> : <Navigate to="/" />} />
       </Routes>
 
       <ToastContainer position="top-right" autoClose={3000} />

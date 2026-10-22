@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import '../styles.css';
+import { apiUrl } from '../config/api';
 
 export default function Nomina() {
   const navigate = useNavigate();
@@ -22,7 +23,7 @@ export default function Nomina() {
   const cargarSolicitudes = async () => {
     setLoading(true);
     try {
-      const response = await fetch('http://localhost:5001/api/solicitudes/por-estado/AprobadoDir');
+      const response = await fetch(apiUrl('/api/solicitudes/por-estado/AprobadoDir'));
       if (!response.ok) throw new Error(`HTTP ${response.status}`);
       const data = await response.json();
       setSolicitudes(Array.isArray(data) ? data : []);
@@ -36,7 +37,7 @@ export default function Nomina() {
   const marcarDesembolsado = async (id_solicitud) => {
     setUpdatingId(id_solicitud);
     try {
-      const res = await fetch(`http://localhost:5001/api/solicitudes/${id_solicitud}`, {
+      const res = await fetch(apiUrl(`/api/solicitudes/${id_solicitud}`), {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ estado: 'Desembolsado' }),

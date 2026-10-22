@@ -10,7 +10,7 @@ Viatech2 es una aplicación web diseñada para gestionar solicitudes de viático
 
 ## 🛠️ Tecnologías usadas
 
-- **Frontend:** React.js + CSS
+- **Frontend:** React + Vite
 - **Backend:** Flask + MySQL
 - **Control de versiones:** Git y GitHub
 - **Pruebas API:** Postman
@@ -62,6 +62,8 @@ cd frontend
 npm install
 npm start
 ```
+
+La URL del API se lee de `frontend/.env` como `VITE_API_URL`. Si vas a usar el Flask local, cámbiala a `http://localhost:5001`. El servidor de desarrollo queda en el puerto 3000.
 
 ### 3. Ejecuta el backend (Flask):
 ```bash

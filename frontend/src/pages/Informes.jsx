@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
 import '../styles.css';
+import { apiUrl } from '../config/api';
 
 export default function Informes() {
   const [solicitudes, setSolicitudes] = useState([]);
@@ -18,7 +19,7 @@ export default function Informes() {
 
   const cargarInformes = async () => {
     try {
-      const res = await fetch('http://localhost:5001/api/solicitudes'); // Ajustar backend para permitir filtros
+      const res = await fetch(apiUrl('/api/solicitudes'));
       if (!res.ok) throw new Error('Error al obtener los datos');
       const data = await res.json();
       setSolicitudes(data);
@@ -60,7 +61,7 @@ export default function Informes() {
             </tr>
           </thead>
           <tbody>
-            {solicitudes.map(s => (
+            {solicitudes.filter((s) => !filtro.estado || s.estado === filtro.estado).map(s => (
               <tr key={s.id_solicitud}>
                 <td>{s.id_solicitud}</td>
                 <td>{s.nombre_usuario || 'N/A'}</td>
